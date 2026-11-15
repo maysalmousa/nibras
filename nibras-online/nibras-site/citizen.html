@@ -68,6 +68,17 @@
   </section>
 
   <!-- كيف يعمل -->
+  <section id="mine" class="hidden mx-auto max-w-6xl px-4 pt-10 sm:px-6">
+    <div id="fixedBanner" class="hidden mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-900"></div>
+    <div class="card p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 class="text-lg font-bold">بلاغاتي</h2><p class="text-sm text-slate-500">تابع حالة بلاغاتك — بنعلمك هنا أول ما تنصلح</p></div>
+        <button type="button" id="notifyBtn" class="btn-outline hidden h-9 px-3 text-sm">🔔 نبّهني لما تنصلح</button>
+      </div>
+      <ul id="mineList" class="mt-4 divide-y divide-slate-100"></ul>
+    </div>
+  </section>
+
   <section id="how" class="mx-auto max-w-6xl scroll-mt-16 px-4 py-14 sm:px-6">
     <h2 class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">ثلاث خطوات وبلاغك يوصل</h2>
     <p class="mt-2 text-sm text-slate-500">يقتصر نطاق البلاغات على عيوب أسطح الطرق فقط.</p>
@@ -121,6 +132,7 @@
       <p class="mt-3 text-sm text-slate-500">رقم البلاغ</p>
       <div id="doneId" class="mt-1 inline-block rounded-lg bg-slate-100 px-4 py-1.5 font-mono text-2xl font-semibold text-slate-800" dir="ltr"></div>
       <p class="mt-5 text-sm leading-relaxed text-slate-600">ظهر بلاغك الآن على منصة نبراس مع الموقع والصورة، وسيتحقق منه جهاز نبراس عند مروره بالمكان.</p>
+      <p class="mt-3 rounded-lg bg-emerald-50 p-3 text-sm leading-relaxed text-emerald-800">🔔 حفظنا بلاغك في «بلاغاتي» على هذا الجوال. ارجع لهذي الصفحة أي وقت، وبنقولك أول ما تنصلح الحفرة.</p>
       <button type="button" id="again" class="btn-outline mt-7 h-10 px-5">إرسال بلاغ آخر</button>
     </div>
   </section>
@@ -209,6 +221,7 @@ $('#form').onsubmit = async e => {
       return showErr(msg[rej] || 'ما قدرنا نقبل البلاغ — تأكد من الصورة والمكان وحاول مرة ثانية.');
     }
     try { localStorage.setItem('nibras-citizen-last', Date.now()); } catch (_) {}
+    saveMine({ id, key, type, ts: Date.now() });
     $('#doneId').textContent = id || '✓';
     ['#formSec', '#hero', '#how'].forEach(q => $(q).classList.add('hidden')); $('#done').classList.remove('hidden'); window.scrollTo(0, 0);
   } catch (err) { showErr('تعذر الإرسال — تأكد من الإنترنت وحاول مرة ثانية'); }
@@ -217,6 +230,47 @@ $('#form').onsubmit = async e => {
 $('#again').onclick = () => { location.hash = ''; location.reload(); };
 // عدد البلاغات اللي وصلت المنصة
 fetch(FB + '/reports.json?shallow=true').then(r => r.json()).then(o => { const s = { total: o ? Object.keys(o).length : 0 }; if (s.total) { const el = $('#statLine'); el.textContent = `وصل منصة نبراس حتى الآن ${s.total.toLocaleString('ar-SA')} بلاغ عن عيوب الطرق — بلاغك القادم يُكمل الصورة.`; el.classList.remove('hidden'); } }).catch(() => {});
+
+// ===== بلاغاتي: متابعة بلاغات المواطن وإشعاره لما تنصلح =====
+const MINE_KEY = 'nibras-my-reports', SEEN_KEY = 'nibras-fixed-seen';
+const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (_) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
+function saveMine(r) { const a = lsGet(MINE_KEY, []); a.unshift(r); lsSet(MINE_KEY, a.slice(0, 20)); }
+const TYPE_AR = { pothole: 'حفرة', longitudinal_crack: 'تشقق طولي', alligator_crack: 'تشقق شبكي', rutting: 'تخدد', raveling: 'تفكك الأسفلت', depression: 'هبوط', faded_marking: 'خطوط باهتة' };
+const durAr = ms => { const m = ms / 60000; return m < 60 ? `${Math.max(1, Math.round(m))} دقيقة` : m < 1440 ? `${(m / 60).toFixed(1)} ساعة` : `${(m / 1440).toFixed(1)} يوم`; };
+function stateOf(rep, raw) {
+  if (!rep) return raw && raw.rejected ? ['انرفض — الصورة ما فيها عيب طريق', 'bg-rose-50 text-rose-700'] : ['بانتظار المعالجة', 'bg-slate-100 text-slate-600'];
+  if (rep.status === 'fixed') return rep.fixCheck === 'verified' ? ['✓ انصلح وتأكد منه جهاز نبراس', 'bg-emerald-100 text-emerald-800'] : rep.fixCheck === 'pending' ? ['تم الإصلاح — بانتظار تحقق جهاز نبراس', 'bg-emerald-50 text-emerald-700'] : ['✓ انصلح', 'bg-emerald-100 text-emerald-800'];
+  return ({ review: ['قيد المراجعة', 'bg-amber-50 text-amber-800'], new: ['وصل للجهة المختصة', 'bg-sky-50 text-sky-800'], in_progress: ['جاري الإصلاح 🛠️', 'bg-violet-50 text-violet-800'], dismissed: ['ما تم اعتماده', 'bg-slate-100 text-slate-600'] })[rep.status] || ['وصل للجهة المختصة', 'bg-sky-50 text-sky-800'];
+}
+async function refreshMine() {
+  const mine = lsGet(MINE_KEY, []); if (!mine.length) return;
+  $('#mine').classList.remove('hidden');
+  const seen = lsGet(SEEN_KEY, []), newlyFixed = [];
+  const rows = await Promise.all(mine.map(async m => {
+    let raw = null;
+    if (!m.id && m.key) { raw = await fetch(`${FB}/raw/${m.key}.json`).then(r => r.json()).catch(() => null); if (raw && typeof raw.report === 'string') m.id = raw.report; }
+    const rep = m.id ? await fetch(`${FB}/reports/${m.id}.json`).then(r => r.json()).catch(() => null) : null;
+    if (rep && rep.status === 'fixed' && !seen.includes(m.id)) newlyFixed.push({ m, rep });
+    return { m, rep, raw };
+  }));
+  lsSet(MINE_KEY, mine);
+  $('#mineList').innerHTML = rows.map(({ m, rep, raw }) => { const [label, cls] = stateOf(rep, raw);
+    const dur = rep && rep.status === 'fixed' && rep.fixedAt && rep.firstSeen ? ` · انصلح خلال ${durAr(rep.fixedAt - rep.firstSeen)}` : '';
+    return `<li class="flex flex-wrap items-center justify-between gap-2 py-3"><span><span class="font-semibold">${TYPE_AR[m.type] || 'عيب في الطريق'}</span> <span class="font-mono text-xs text-slate-500" dir="ltr">${m.id || ''}</span><span class="block text-xs text-slate-500">بلّغت عنه ${new Date(m.ts).toLocaleDateString('ar-SA')}${dur}</span></span><span class="rounded-full px-3 py-1 text-xs font-semibold ${cls}">${label}</span></li>`; }).join('');
+  if (newlyFixed.length) {
+    const { m, rep } = newlyFixed[0];
+    const msg = `بلاغك عن «${TYPE_AR[m.type] || 'عيب في الطريق'}» (${m.id}) انصلح${rep.fixedAt && rep.firstSeen ? ` خلال ${durAr(rep.fixedAt - rep.firstSeen)}` : ''}. شكراً لأنك ساهمت في سلامة الطريق! 💚`;
+    const b = $('#fixedBanner'); b.innerHTML = `<div class="text-lg font-bold">🎉 بلاغك فرق!</div><p class="mt-1 text-sm leading-relaxed">${msg}</p>`; b.classList.remove('hidden');
+    if (window.Notification && Notification.permission === 'granted') { try { new Notification('نبراس — بلاغك انصلح 🎉', { body: msg }); } catch (_) {} }
+    lsSet(SEEN_KEY, seen.concat(newlyFixed.map(x => x.m.id)));
+  }
+}
+if (window.Notification && Notification.permission === 'default') {
+  const nb = $('#notifyBtn'); nb.classList.remove('hidden');
+  nb.onclick = () => Notification.requestPermission().then(p => { if (p !== 'default') nb.classList.add('hidden'); });
+}
+refreshMine(); setInterval(refreshMine, 30000);
 </script>
 </body>
 </html>

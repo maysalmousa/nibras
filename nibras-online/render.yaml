@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: nibras
+    runtime: node
+    plan: free
+    buildCommand: echo "no build needed"
+    startCommand: node nibras-backend/server.js
+    healthCheckPath: /api/health

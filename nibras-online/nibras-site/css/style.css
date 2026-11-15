@@ -1,0 +1,66 @@
+:root{--background:#f8fafc;--foreground:#0f172a;--card:#fff;--card-foreground:#0f172a;--primary:#047857;--primary-foreground:#fff;--secondary:#f1f5f9;--muted:#f1f5f9;--muted-foreground:#64748b;--accent:#ecfdf5;--accent-foreground:#064e3b;--destructive:#be123c;--border:#e2e8f0;--input:#cbd5e1;--ring:#10b981;--radius:.625rem;--sea:#cfe3ea;--land:#f5f3ee;--land-ksa:#fbfaf6;--land-line:#b8b2a6;color-scheme:light}
+html.dark{--background:#0b1220;--foreground:#f1f5f9;--card:#111a2b;--card-foreground:#f1f5f9;--primary:#10b981;--primary-foreground:#04261b;--secondary:#1e293b;--muted:#1e293b;--muted-foreground:#94a3b8;--accent:#1e293b;--accent-foreground:#f1f5f9;--destructive:#f43f5e;--border:#334155;--input:#475569;--ring:#10b981;--sea:#0e1a2c;--land:#18233a;--land-ksa:#1d2a44;--land-line:#3b4a66;
+--color-slate-50:#1e293b;--color-slate-100:#1e293b;--color-slate-200:#334155;--color-slate-300:#475569;--color-slate-400:#64748b;--color-slate-500:#94a3b8;--color-slate-600:#cbd5e1;--color-slate-700:#e2e8f0;--color-slate-800:#f1f5f9;--color-slate-900:#f8fafc;--color-emerald-50:#0b2e24;--color-emerald-700:#34d399;color-scheme:dark}
+html{font-family:"IBM Plex Sans Arabic","IBM Plex Sans",system-ui,sans-serif;scroll-behavior:smooth}
+body{background-color:var(--background);color:var(--foreground);font-family:inherit;font-size:16px}
+html.dark .bg-white{background-color:var(--card)!important}
+html.dark .bg-white\/85{background-color:color-mix(in oklab,var(--card) 85%,transparent)!important}
+html.dark .bg-\[\#F8FAFC\]{background-color:var(--background)!important}
+.leaflet-container{font-family:inherit;background:var(--sea)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--foreground)}
+.leaflet-popup-content-wrapper{border-radius:12px}
+.leaflet-popup-content{font-family:inherit;margin:12px 14px}
+.leaflet-popup-content p{margin:0}
+.defect-marker{transition:fill-opacity .15s}.defect-marker:hover{fill-opacity:1}
+html.dark .leaflet-bar a{background:var(--card);color:var(--foreground);border-color:var(--border)}
+html.dark .leaflet-control-attribution{background:rgba(17,26,43,.8);color:#94a3b8}
+.photo-ph{background:repeating-linear-gradient(45deg,#F1F5F9 0,#F1F5F9 10px,#F8FAFC 10px,#F8FAFC 20px)}
+html.dark .photo-ph{background:repeating-linear-gradient(45deg,#16213a 0,#16213a 10px,#111a2b 10px,#111a2b 20px)}
+header.sticky{top:env(safe-area-inset-top,0px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s ease-out both}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast{animation:toastIn .2s ease-out both}
+
+/* Live detections from the Nibras device */
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:999px;background:#10b981;box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:livePulse 1.6s ease-out infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}100%{box-shadow:0 0 0 8px rgba(16,185,129,0)}}
+.live-marker{animation:liveMarker 1.6s ease-in-out infinite}
+@keyframes liveMarker{0%,100%{stroke-opacity:1}50%{stroke-opacity:.35}}
+@media (prefers-reduced-motion:reduce){.live-dot,.live-marker{animation:none}}
+
+/* Big alert for new detections */
+@keyframes alertIn{0%{opacity:0;transform:translateY(-24px) scale(.96)}60%{opacity:1;transform:translateY(4px) scale(1.01)}100%{transform:none}}
+@keyframes alertShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(6deg)}}
+@keyframes alertBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.big-alert-card{animation:alertIn .45s ease-out both}
+.big-alert-icon svg{animation:alertShake .8s ease-in-out 2}
+.big-alert-progress{transform-origin:inline-start;animation:alertBar 15s linear forwards}
+[dir="rtl"] .big-alert-progress{transform-origin:right}
+[dir="ltr"] .big-alert-progress{transform-origin:left}
+@media (prefers-reduced-motion:reduce){.big-alert-card,.big-alert-icon svg,.big-alert-progress{animation:none}}
+
+.big-alert-edge{box-shadow:inset 0 0 0 10px var(--alert);animation:edgePulse 1s ease-in-out infinite}
+@keyframes edgePulse{0%,100%{opacity:1}50%{opacity:.2}}
+.big-alert-backdrop{animation:fadeIn .25s ease-out both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.big-alert-edge,.big-alert-backdrop{animation:none}}
+
+/* ---------- Live device marker (Nibras device position from the backend) ---------- */
+.device-pin{position:relative;width:22px;height:22px}
+.device-pin span{position:absolute;inset:3px;border-radius:9999px;background:#2563EB;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.device-pin::before{content:"";position:absolute;inset:-10px;border-radius:9999px;background:rgba(37,99,235,.25);animation:devicePulse 1.8s ease-out infinite}
+.device-pin.off span{background:#94A3B8}
+.device-pin.off::before{display:none}
+@keyframes devicePulse{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.device-pin::before{animation:none}}
+
+/* ---------- Printing the Reports page only ---------- */
+@media print{
+  html.print-report body *{visibility:hidden!important}
+  html.print-report #reports,html.print-report #reports *{visibility:visible!important}
+  html.print-report #reports{position:absolute;left:0;top:0;width:100%}
+  html.print-report .no-print{display:none!important}
+  html.print-report #repDoc{border:0;box-shadow:none}
+}

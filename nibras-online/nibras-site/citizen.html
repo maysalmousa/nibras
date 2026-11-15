@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>نبراس المواطن</title>
+<meta name="description" content="نبراس المواطن — أبلغ عن حفرة أو تشقق أو خطوط باهتة في الطريق، ويصل بلاغك مباشرة لمنصة نبراس عند الجهة المختصة.">
+<meta name="theme-color" content="#064E3B">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23064E3B'/%3E%3Cg transform='translate(18 16) scale(.66)' fill='%23FCD34D'%3E%3Cpath d='M3 97C10 58 42 22 94 3C62 26 34 60 24 97Z'/%3E%3Cpath d='M73 97C69 64 74 32 94 3C84 34 83 66 91 97Z'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11/dist/index.global.js"></script>
+<script src="vendor/leaflet.js"></script>
+<link rel="stylesheet" href="vendor/leaflet.css">
+<style type="text/tailwindcss">
+@theme inline{ --font-sans:"IBM Plex Sans Arabic",system-ui,sans-serif; --font-mono:"IBM Plex Mono",ui-monospace,monospace; }
+.chip{@apply flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50;}
+.chip[aria-pressed="true"]{@apply border-emerald-600 bg-emerald-50 text-emerald-800 ring-3 ring-emerald-600/15;}
+.field{@apply h-10 w-full min-w-0 rounded-lg border border-slate-300 bg-transparent px-3 text-base outline-none transition-colors placeholder:text-slate-400 focus-visible:border-emerald-600 focus-visible:ring-3 focus-visible:ring-emerald-600/20 md:text-sm;}
+.lbl{@apply mb-1.5 block text-sm font-medium text-slate-800;}
+.card{@apply rounded-xl border border-slate-200 bg-white shadow-sm;}
+.btn-primary{@apply inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#047857] font-medium text-white transition-colors outline-none hover:bg-[#065F46] focus-visible:ring-3 focus-visible:ring-emerald-600/40 disabled:opacity-60;}
+.btn-outline{@apply inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors outline-none hover:bg-slate-50 focus-visible:ring-3 focus-visible:ring-emerald-600/30;}
+</style>
+<style>
+.leaflet-container{font-family:inherit;background:#eef2ef}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s ease-out both}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .35s cubic-bezier(.2,.9,.3,1.3) both}
+@media (prefers-reduced-motion:reduce){.rise,.pop{animation:none}}
+</style>
+</head>
+<body class="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 antialiased">
+
+<header class="sticky top-0 z-[1000] border-b border-slate-200 bg-white/85 backdrop-blur-md">
+  <div class="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+    <a href="#hero" class="flex items-center gap-2.5">
+      <span class="grid size-9 place-items-center rounded-lg bg-[#064E3B] text-amber-300 shadow-sm"><svg viewBox="0 0 100 100" fill="currentColor" class="size-6" aria-hidden="true"><path d="M3 97C10 58 42 22 94 3C62 26 34 60 24 97Z"/><path d="M73 97C69 64 74 32 94 3C84 34 83 66 91 97Z"/><path d="M47 97C47 66 62 32 93 5" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="10 7"/></svg></span>
+      <span class="leading-tight"><span class="block text-lg font-bold text-slate-900">نبراس المواطن</span><span class="hidden text-[11px] text-slate-500 sm:block">بلاغات عيوب الطرق للعموم</span></span>
+    </a>
+    <nav class="ms-6 hidden items-center gap-1 md:flex">
+      <a href="#hero" class="rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">الرئيسية</a>
+      <a href="#how" class="rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">كيف يعمل</a>
+    </nav>
+    <a href="#formSec" class="btn-primary ms-auto h-9 px-4 text-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>بلّغ الآن</a>
+  </div>
+</header>
+
+<main>
+  <!-- الرئيسية -->
+  <section id="hero" class="relative overflow-hidden">
+    <img alt="" class="absolute inset-0 h-full w-full object-cover" src="assets/hero.webp">
+    <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(6,78,59,0.94)_0%,rgba(15,23,42,0.86)_100%)]"></div>
+    <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div class="rise max-w-2xl">
+        <span class="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-white/10 px-3 py-1 text-xs font-medium text-emerald-100"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>شريك في سلامة الطريق</span>
+        <h1 class="mt-5 text-3xl font-bold leading-tight tracking-tight text-balance text-white sm:text-4xl lg:text-5xl">عينك على الطريق… وبلاغك يصنع الفرق</h1>
+        <p class="mt-5 text-base leading-relaxed text-emerald-50/90 sm:text-lg">شفت حفرة أو تشقق أو خطوط باهتة؟ صوّرها وحدد مكانها، ويوصل بلاغك مباشرة لمنصة نبراس عند الجهة المختصة — مع الصورة والموقع بالضبط — ويتحقق منه جهاز نبراس أول ما يمر بالمكان.</p>
+        <p id="statLine" class="mt-4 hidden text-sm font-medium text-amber-200"></p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#formSec" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-[#064E3B] transition-colors hover:bg-emerald-50"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>بلّغ الآن</a>
+          <a href="#how" class="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-white/30 bg-white/5 px-5 text-sm font-medium text-white transition-colors hover:bg-white/15">كيف يعمل<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- كيف يعمل -->
+  <section id="how" class="mx-auto max-w-6xl scroll-mt-16 px-4 py-14 sm:px-6">
+    <h2 class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">ثلاث خطوات وبلاغك يوصل</h2>
+    <p class="mt-2 text-sm text-slate-500">يقتصر نطاق البلاغات على عيوب أسطح الطرق فقط.</p>
+    <div class="mt-8 grid gap-5 md:grid-cols-3">
+      <div class="card rise p-6" style="animation-delay:.05s"><span class="grid size-11 place-items-center rounded-lg bg-emerald-50 text-emerald-700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></span><h3 class="mt-4 text-lg font-semibold">١. صوّر العيب</h3><p class="mt-2 text-sm leading-relaxed text-slate-600">التقط صورة واضحة للحفرة أو التشقق أو الخطوط الباهتة.</p></div>
+      <div class="card rise p-6" style="animation-delay:.12s"><span class="grid size-11 place-items-center rounded-lg bg-emerald-50 text-emerald-700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span><h3 class="mt-4 text-lg font-semibold">٢. حدد مكانه</h3><p class="mt-2 text-sm leading-relaxed text-slate-600">استخدم موقعك الحالي أو اضغط على الخريطة في مكان العيب بالضبط.</p></div>
+      <div class="card rise p-6" style="animation-delay:.19s"><span class="grid size-11 place-items-center rounded-lg bg-emerald-50 text-emerald-700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></span><h3 class="mt-4 text-lg font-semibold">٣. أرسل البلاغ</h3><p class="mt-2 text-sm leading-relaxed text-slate-600">يظهر بلاغك فوراً على منصة نبراس، ويتحقق منه جهاز نبراس عند مروره بالمكان.</p></div>
+    </div>
+  </section>
+
+  <!-- البلاغ -->
+  <section id="formSec" class="scroll-mt-16 border-t border-slate-200 bg-white/60">
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">بلاغ جديد</h2>
+      <p class="mt-1 text-sm text-slate-500">الحقول المعلّمة بـ * مطلوبة</p>
+      <form id="form" class="mt-6 grid gap-5 lg:grid-cols-5" novalidate>
+        <div class="card space-y-5 p-5 lg:col-span-2">
+          <div><span class="lbl">نوع العيب *</span><div id="types" class="grid grid-cols-2 gap-2"></div></div>
+          <div>
+            <span class="lbl">صورة العيب</span>
+            <label for="photo" id="photoBox" class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 p-6 text-slate-500 transition-colors hover:bg-slate-50">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-7" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><span class="text-sm font-medium">اضغط لتصوير العيب أو اختيار صورة</span>
+            </label>
+            <input id="photo" type="file" accept="image/*" capture="environment" class="sr-only">
+          </div>
+          <div><label for="name" class="lbl">الاسم (اختياري)</label><input id="name" maxlength="60" class="field" autocomplete="name"></div>
+          <div><label for="desc" class="lbl">وصف مختصر (اختياري)</label><textarea id="desc" rows="3" maxlength="500" class="field !h-auto py-2" placeholder="مثال: حفرة كبيرة في المسار الأيمن قبل الإشارة"></textarea></div>
+        </div>
+        <div class="card flex flex-col p-5 lg:col-span-3">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <span class="lbl !mb-0">مكان العيب *</span>
+            <button type="button" id="me" class="btn-outline h-8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>موقعي الحالي</button>
+          </div>
+          <div class="relative z-0 h-80 overflow-hidden rounded-lg border border-slate-200 lg:h-auto lg:min-h-[340px] lg:flex-1" dir="ltr"><div id="map" class="h-full w-full"></div></div>
+          <p id="llText" class="mt-2 text-sm text-slate-500">اضغط على الخريطة في مكان العيب بالضبط</p>
+          <p id="err" class="mt-3 hidden rounded-lg bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700" role="alert"></p>
+          <button type="submit" id="send" class="btn-primary mt-4 h-12 w-full text-base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg><span>إرسال البلاغ</span></button>
+          <p class="mt-3 text-center text-xs leading-relaxed text-slate-500">لا نطلب رقم جوال. يظهر البلاغ بحالة "يحتاج مراجعة" حتى يتحقق منه جهاز نبراس أو الجهة المختصة.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- تم الإرسال -->
+  <section id="done" class="hidden px-4 py-16 sm:px-6">
+    <div class="card mx-auto max-w-md p-8 text-center">
+      <div class="pop mx-auto grid size-20 place-items-center rounded-full bg-emerald-50 text-emerald-700">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="size-10"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h1 class="mt-5 text-2xl font-bold">شكراً لك! وصل بلاغك</h1>
+      <p class="mt-3 text-sm text-slate-500">رقم البلاغ</p>
+      <div id="doneId" class="mt-1 inline-block rounded-lg bg-slate-100 px-4 py-1.5 font-mono text-2xl font-semibold text-slate-800" dir="ltr"></div>
+      <p class="mt-5 text-sm leading-relaxed text-slate-600">ظهر بلاغك الآن على منصة نبراس مع الموقع والصورة، وسيتحقق منه جهاز نبراس عند مروره بالمكان.</p>
+      <button type="button" id="again" class="btn-outline mt-7 h-10 px-5">إرسال بلاغ آخر</button>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 bg-white"><div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-sm text-slate-500 sm:px-6"><span>نبراس المواطن — جزء من منصة نبراس لرصد عيوب أسطح الطرق في المملكة العربية السعودية</span></div></footer>
+
+<script>
+// الموقع يرسل البلاغ مباشرة لقاعدة بيانات نبراس (Firebase) — يشتغل من أي مكان، والباك إند يحلله ويعرضه على منصة نبراس
+const FB = 'https://nibs-eb9d5-default-rtdb.europe-west1.firebasedatabase.app';
+const TYPES = [
+  ['pothole', 'حفرة', '#E11D48'], ['longitudinal_crack', 'تشقق طولي', '#EA580C'], ['alligator_crack', 'تشقق شبكي', '#D97706'],
+  ['faded_marking', 'خطوط باهتة', '#64748B'], ['depression', 'هبوط', '#4F46E5'], ['rutting', 'تخدد', '#7C3AED'],
+];
+const $ = s => document.querySelector(s);
+const ICON = { check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' };
+let type = 'pothole', photo = null, ll = null, pin = null;
+
+$('#types').innerHTML = TYPES.map(([k, l, c]) => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === type}"><span class="size-2.5 shrink-0 rounded-full" style="background:${c}"></span>${l}</button>`).join('');
+$('#types').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; type = b.dataset.k; document.querySelectorAll('#types [data-k]').forEach(x => x.setAttribute('aria-pressed', x === b)); };
+
+// الخريطة
+const map = L.map('map', { center: [21.5433, 39.1728], zoom: 12 });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
+function setLL(lat, lng, fly) {
+  ll = [+lat.toFixed(6), +lng.toFixed(6)];
+  if (!pin) pin = L.marker(ll, { draggable: true }).addTo(map).on('dragend', e => { const p = e.target.getLatLng(); setLL(p.lat, p.lng); }); else pin.setLatLng(ll);
+  if (fly) map.setView(ll, 18);
+  $('#llText').innerHTML = `<span class="inline-flex items-center gap-1.5 font-medium text-emerald-700">${ICON.check}تم تحديد المكان</span> <bdo dir="ltr" class="font-mono text-slate-600">${ll[0]}, ${ll[1]}</bdo> <span class="text-slate-500">— اسحب الدبوس لتعديله</span>`;
+}
+map.on('click', e => setLL(e.latlng.lat, e.latlng.lng));
+function locate(silent) {
+  if (!navigator.geolocation || !window.isSecureContext) { if (!silent) showErr('المتصفح ما يسمح بتحديد الموقع تلقائياً هنا — اضغط على الخريطة في مكان العيب'); return; }
+  navigator.geolocation.getCurrentPosition(p => setLL(p.coords.latitude, p.coords.longitude, true), () => { if (!silent) showErr('تعذر تحديد موقعك — اضغط على الخريطة في مكان العيب'); }, { enableHighAccuracy: true, timeout: 10000 });
+}
+$('#me').onclick = () => locate(false);
+locate(true);
+// ابدأ من مكان جهاز نبراس إذا معروف
+fetch(FB + '/location.json').then(r => r.json()).then(d => { if (!ll && d && +d.lat) map.setView([+d.lat, +d.lng], 16); }).catch(() => {});
+
+// الصورة (نصغرها قبل الإرسال)
+$('#photo').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const img = new Image(), url = URL.createObjectURL(f);
+  img.onload = () => {
+    const s = Math.min(1, 900 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+    const data = c.toDataURL('image/jpeg', 0.75); photo = data.split(',')[1];
+    $('#photoBox').className = 'block cursor-pointer overflow-hidden rounded-lg border border-emerald-600 bg-white ring-3 ring-emerald-600/15';
+    $('#photoBox').innerHTML = `<img src="${data}" alt="" class="max-h-56 w-full object-cover"><span class="flex items-center justify-center gap-1.5 py-2 text-sm font-medium text-emerald-700">${ICON.check}تم إرفاق الصورة — اضغط لتغييرها</span>`;
+  };
+  img.src = url;
+};
+
+function showErr(m) { const e = $('#err'); e.textContent = m; e.classList.remove('hidden'); e.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+const fbPost = (path, body) => fetch(`${FB}${path}.json`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  .then(r => { if (!r.ok) throw new Error(); return r.json(); });
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+$('#form').onsubmit = async e => {
+  e.preventDefault(); $('#err').classList.add('hidden');
+  if (!ll) return showErr('حدد مكان العيب على الخريطة أولاً');
+  if (ll[0] < 15 || ll[0] > 33 || ll[1] < 33 || ll[1] > 57) return showErr('المكان المحدد خارج المملكة');
+  let last = 0; try { last = +localStorage.getItem('nibras-citizen-last') || 0; } catch (_) {}
+  if (Date.now() - last < 15000) return showErr('انتظر ثواني قبل إرسال بلاغ ثاني');
+  const btn = $('#send'); btn.disabled = true; btn.querySelector('span').textContent = 'جاري الإرسال…';
+  try {
+    let photoKey = null;
+    if (photo) photoKey = (await fbPost('/photos', photo)).name;
+    const raw = { src: 'citizen', type, lat: ll[0], lng: ll[1], name: $('#name').value.trim().slice(0, 60), desc: $('#desc').value.trim().slice(0, 500), ts: { '.sv': 'timestamp' } };
+    if (photoKey) raw.photo = photoKey;
+    const key = (await fbPost('/raw', raw)).name;
+    try { localStorage.setItem('nibras-citizen-last', Date.now()); } catch (_) {}
+    $('#doneId').textContent = '✓';
+    ['#formSec', '#hero', '#how'].forEach(q => $(q).classList.add('hidden')); $('#done').classList.remove('hidden'); window.scrollTo(0, 0);
+    // ننتظر الباك إند يعطي البلاغ رقم (إذا كان شغّال)
+    for (let i = 0; i < 10; i++) {
+      await sleep(1000);
+      const id = await fetch(`${FB}/raw/${key}/report.json`).then(r => r.json()).catch(() => null);
+      if (typeof id === 'string') { $('#doneId').textContent = id; break; }
+    }
+  } catch (err) { showErr('تعذر الإرسال — تأكد من الإنترنت وحاول مرة ثانية'); }
+  finally { btn.disabled = false; btn.querySelector('span').textContent = 'إرسال البلاغ'; }
+};
+$('#again').onclick = () => { location.hash = ''; location.reload(); };
+// عدد البلاغات اللي وصلت المنصة
+fetch(FB + '/reports.json?shallow=true').then(r => r.json()).then(o => { const s = { total: o ? Object.keys(o).length : 0 }; if (s.total) { const el = $('#statLine'); el.textContent = `وصل منصة نبراس حتى الآن ${s.total.toLocaleString('ar-SA')} بلاغ عن عيوب الطرق — بلاغك القادم يُكمل الصورة.`; el.classList.remove('hidden'); } }).catch(() => {});
+</script>
+</body>
+</html>

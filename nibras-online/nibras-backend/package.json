@@ -1,0 +1,9 @@
+{
+  "name": "nibras-backend",
+  "version": "1.0.0",
+  "description": "Nibras road-defect backend: fuses shock-sensor and camera detections from Firebase into verified reports, serves the website and a REST/SSE API.",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED"
+}

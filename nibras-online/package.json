@@ -1,0 +1,7 @@
+{
+  "name": "nibras",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "start": "node nibras-backend/server.js" },
+  "engines": { "node": ">=18" }
+}

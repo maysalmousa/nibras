@@ -66,7 +66,10 @@ function generate(n){const r=rng(2030),now=new Date(),cw=CITY_KEYS.map(k=>[k,CIT
   out.sort((a,b)=>a.date.localeCompare(b.date));out.forEach((e,i)=>{e.id=`NB-${String(i+1).padStart(4,'0')}`});return out.reverse()}
 const DEMO=[];   // بيانات حقيقية فقط من جهاز نبراس. للبيانات التجريبية: generate(150)
 let LIVE=[];
-const API=location.protocol.startsWith('http')?'':'http://localhost:3000';   // الباك إند
+const API=location.protocol.startsWith('http')?'':'http://localhost:3000';
+// وضع المشاهدة (للحكام): يشتغل تلقائياً على رابط GitHub Pages أو بإضافة ?view للرابط — يقرأ النتائج من Firebase مباشرة وبدون أزرار تعديل
+const VIEWER=/github\.io$/.test(location.hostname)||new URLSearchParams(location.search).has('view');
+const FB_URL='https://nibs-eb9d5-default-rtdb.europe-west1.firebasedatabase.app';   // الباك إند
 const STATUS_KEYS=['review','new','in_progress','fixed','dismissed'];
 const STATUS_BADGE={review:'bg-amber-50 text-amber-800 ring-amber-600/25',new:'bg-sky-50 text-sky-800 ring-sky-600/25',in_progress:'bg-violet-50 text-violet-800 ring-violet-600/25',fixed:'bg-emerald-50 text-emerald-800 ring-emerald-600/25',dismissed:'bg-slate-100 text-slate-600 ring-slate-400/30'};
 const statusBadge=s=>`<span class="inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${STATUS_BADGE[s]||STATUS_BADGE.new}">${esc(T().statuses[s]||s)}</span>`;
@@ -82,6 +85,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 
 /* ---------- Static paint ---------- */
 const NAV=[['landing','house','navHome'],['dashboard','gauge','navDashboard'],['map','map','navMap'],['defects','table','navDefects'],['device','cpu','navDevice'],['citizen','megaphone','navCitizen'],['quality','activity','navQuality'],['reports','file-text','navReports'],['about','info','navAbout'],['entities','building','navEntities'],['settings','settings','navSettings']];
+if(VIEWER)NAV.splice(NAV.findIndex(n=>n[0]==='device'),1);
 function paintNav(){
   $$('[data-nav]').forEach(n=>{const top=n.dataset.nav==='top',items=top?NAV.slice(0,9):NAV;
     n.innerHTML=items.map(([id,icn,k])=>`<a href="#${id}" class="${top?'toplink':'navlink'}" ${S.active===id?'aria-current="true"':''} ${n.dataset.nav==='drawer'?'data-close':''}>${top?'':ic(icn,'size-4')}${esc(T()[k])}</a>`).join('')});
@@ -113,7 +117,7 @@ function paintStatic(){
 /* ---------- Badges / details ---------- */
 const BADGE={high:'bg-[#FFE4E6] text-[#9F1239] ring-[#E11D48]/20',medium:'bg-[#FEF3C7] text-[#92400E] ring-[#D97706]/20',low:'bg-[#ECFDF5] text-[#065F46] ring-[#059669]/20'};
 const badge=s=>`<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${BADGE[s]}"><span class="size-1.5 rounded-full bg-current"></span>${esc(T().severities[s])}</span>`;
-const photo=(h,d)=>d&&d.photo?`<div class="photo-ph overflow-hidden rounded-lg border border-slate-200 bg-slate-100 ${h}"><img src="${API}/api/photo/${encodeURIComponent(d.photo)}" alt="" class="h-full w-full object-cover"></div>`:`<div class="photo-ph flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 text-slate-500 ${h}">${ic('image-off','size-6')}<span class="text-xs font-medium">${esc(T().photoPlaceholder)}</span></div>`;
+const photo=(h,d)=>d&&d.photo?`<div class="photo-ph overflow-hidden rounded-lg border border-slate-200 bg-slate-100 ${h}"><img ${VIEWER?`data-fbphoto="${esc(d.photo)}"`:`src="${API}/api/photo/${encodeURIComponent(d.photo)}"`} alt="" class="h-full w-full object-cover"></div>`:`<div class="photo-ph flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 text-slate-500 ${h}">${ic('image-off','size-6')}<span class="text-xs font-medium">${esc(T().photoPlaceholder)}</span></div>`;
 const roadName=d=>d.road?d.road[S.lang]:T().unknownRoad;
 const placeName=d=>{const t=T(),sep=S.lang==='ar'?'، ':', ';return [d.road?d.road[S.lang]:null,d.district?d.district[S.lang]:null,t.cities[d.city]].filter(Boolean).join(sep)};
 const tfmt=ts=>new Date(ts).toLocaleString(S.lang==='ar'?'ar-SA-u-ca-gregory-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short'});
@@ -268,6 +272,7 @@ let backend={up:false,firebase:false},device=null,devMarker=null,liveStarted=fal
 function setBackend(up,h){backend.up=up;if(h)backend.firebase=!!h.firebase;paintLiveStatus()}
 function deviceOnline(){return !!(device&&device.ts&&Date.now()-device.ts<30000)}
 function paintLiveStatus(){const el=$('#liveStatus');if(!el)return;const t=T();
+  if(VIEWER){const ok=backend.up;el.innerHTML=`<span class="inline-flex items-center gap-1.5"><span class="inline-block size-2 rounded-full" style="background:${ok?'#059669':'#D97706'}"></span>${esc(S.lang==='ar'?(ok?'عرض مباشر للنتائج':'جاري الاتصال...'):(ok?'Live results':'Connecting...'))}</span>`;return}
   const dot=c=>`<span class="inline-block size-2 rounded-full" style="background:${c}"></span>`;
   const be=!backend.up?[dot('#E11D48'),t.backendDown]:!backend.firebase?[dot('#D97706'),t.fbDown]:[dot('#059669'),t.backendOk];
   let dv=[dot('#94A3B8'),t.deviceNone];
@@ -279,7 +284,22 @@ function paintDevice(){paintLiveStatus();if(!map)return;
   const icon=L.divIcon({className:'',html:`<div class="device-pin ${on?'':'off'}"><span></span></div>`,iconSize:[22,22],iconAnchor:[11,11]});
   const pop=`<div dir="${S.lang==='ar'?'rtl':'ltr'}" class="font-sans text-sm"><div class="font-semibold text-slate-900">${esc(t.device)}</div><div class="${on?'text-emerald-700':'text-rose-700'}">${esc(on?t.deviceOnline:t.deviceOffline)}</div>${device.speed!=null?`<div>${esc(t.speed)}: ${(+device.speed).toFixed(0)} ${esc(t.kmh)}</div>`:''}${device.sats!=null?`<div>GPS: ${device.sats} ${esc(t.sats)}${device.hdop!=null?` · HDOP <span dir="ltr">${(+device.hdop).toFixed(1)}</span>`:''}</div>`:''}<div class="text-slate-500">${esc(t.lastUpdate)}: <span>${device.ts?esc(tfmt(device.ts)):'—'}</span></div><div class="font-mono text-xs text-slate-500" dir="ltr">${(+device.lat).toFixed(6)}, ${(+device.lng).toFixed(6)}</div></div>`;
   if(!devMarker){devMarker=L.marker(ll,{icon,zIndexOffset:1000}).bindPopup(pop).addTo(map)}else{devMarker.setLatLng(ll).setIcon(icon).setPopupContent(pop)}renderDevicePage()}
-function connectLive(){
+function connectViewer(){let first=true,timer=null;
+  const load=async()=>{try{const o=(await fetch(`${FB_URL}/reports.json`,{cache:'no-store'}).then(r=>r.json()))||{};
+    const before=new Map(REPORTS);REPORTS.clear();Object.values(o).forEach(r=>{if(r&&r.id)REPORTS.set(r.id,r)});rebuild();setBackend(true,{firebase:true});
+    if(first){first=false;if(LIVE.length&&map)map.fitBounds(L.latLngBounds(LIVE.map(d=>[d.lat,d.lng])).pad(.3),{maxZoom:16});liveStarted=true;return}
+    for(const r of REPORTS.values()){if(r.status==='dismissed')continue;const old=before.get(r.id);
+      if(!old||(r.confirmed&&!old.confirmed)){const d=fromReport(r);showBigAlert(d,!!(r.citizen&&!r.camera&&!r.sensor));alertSound(d.severity);if(map)map.flyTo([d.lat,d.lng],17,{duration:1.2});break}}
+  }catch(e){setBackend(false)}};
+  const soon=()=>{clearTimeout(timer);timer=setTimeout(load,500)};
+  load();setInterval(load,15000);
+  if(window.EventSource){try{const es=new EventSource(`${FB_URL}/reports.json`);es.addEventListener('put',soon);es.addEventListener('patch',soon)}catch(e){}}
+  const loadPhotos=()=>document.querySelectorAll('img[data-fbphoto]').forEach(img=>{const k=img.dataset.fbphoto;img.removeAttribute('data-fbphoto');
+    fetch(`${FB_URL}/photos/${encodeURIComponent(k)}.json`).then(r=>r.json()).then(b=>{if(typeof b==='string')img.src=b.startsWith('data:')?b:`data:image/jpeg;base64,${b}`}).catch(()=>{})});
+  new MutationObserver(loadPhotos).observe(document.body,{childList:true,subtree:true});
+  const dev=document.getElementById('device');if(dev)dev.style.display='none';
+}
+function connectLive(){if(VIEWER)return connectViewer();
   if(!window.EventSource){setBackend(false);return}
   const es=new EventSource(`${API}/api/events`);
   es.addEventListener('hello',e=>{const m=JSON.parse(e.data);REPORTS.clear();(m.reports||[]).forEach(r=>REPORTS.set(r.id,r));rebuild();device=m.device||null;setBackend(true,m.health);setRawLog(m.rawLog);paintDevice();
@@ -309,6 +329,7 @@ function toast(msg,ok=true){const el=document.createElement('div');el.className=
 function showDefect(id){const d=DEFECTS.find(x=>x.id===id),t=T();if(!d)return;
   openDialog(`<div class="flex flex-col gap-1 pe-8"><h2 class="flex items-center gap-2 text-lg font-semibold text-slate-900">${esc(t.detailsTitle)}<span class="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">${d.id}</span></h2><p class="text-sm text-slate-500">${esc(t.types[d.type])}</p></div>${photo('h-44',d)}${details(d,false)}${d.live?`<button type="button" id="replayAlert" class="btn-outline h-10 w-full">${ic('bell','size-4')}${esc(t.replayAlert)}</button>`:''}${d.live?`<div class="space-y-2 border-t border-slate-100 pt-3"><div class="text-sm font-medium text-slate-700">${esc(t.changeStatus)}</div><div class="flex flex-wrap gap-2" id="statusBtns">${STATUS_KEYS.map(s=>`<button type="button" data-status="${s}" class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${d.status===s?'border-emerald-600 bg-emerald-50 text-emerald-800':'border-slate-200 text-slate-700 hover:bg-slate-50'}">${esc(t.statuses[s])}</button>`).join('')}</div></div>`:''}`,'sm:max-w-lg');
   const ra=$('#replayAlert');if(ra)ra.onclick=()=>{closeDialog();unlockAudio();showBigAlert(d);alertSound(d.severity)};
+  if(VIEWER){const x=$('#statusBtns');if(x)x.parentElement.remove()}
   const sb=$('#statusBtns');if(sb)sb.onclick=e=>{const b=e.target.closest('[data-status]');if(b&&b.dataset.status!==d.status)setStatus(d.id,b.dataset.status)}}
 
 let editing=null;
@@ -371,4 +392,4 @@ function bind(){
 }
 
 bind();paintStatic();initMap();trackActive();connectLive();setInterval(paintDevice,5000);
-setInterval(async()=>{try{const h=await fetch(`${API}/api/health`,{cache:'no-store'}).then(r=>r.json());setBackend(true,h)}catch(e){setBackend(false)}},10000);
+if(!VIEWER)setInterval(async()=>{try{const h=await fetch(`${API}/api/health`,{cache:'no-store'}).then(r=>r.json());setBackend(true,h)}catch(e){setBackend(false)}},10000);

@@ -303,14 +303,14 @@ function renderCitizen() {
   const url = CITIZEN_URL || (VIEWER ? new URL('citizen.html', location.href.split('#')[0]).href : `${API || location.origin}/citizen`);
   const list = DEFECTS.filter(d => d.citizen).sort((a, b) => (b.citizen.ts || 0) - (a.citizen.ts || 0));
   el.innerHTML = `${pageHead(t.citTitle, t.citSub)}
-    <div class="grid gap-4 lg:grid-cols-5">
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+    <div class="grid gap-4 lg:grid-cols-5 grid-cols-1">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2 min-w-0">
         <div class="flex items-center gap-3"><span class="logo-tile grid size-11 shrink-0 place-items-center rounded-xl bg-[#064E3B] text-amber-300">${LOGO_SVG}</span><div><h3 class="text-base font-semibold text-slate-900">${esc(t.citSite)}</h3><p class="text-xs text-slate-500">${esc(t.citSiteSub)}</p></div></div>
         <p class="mt-3 text-sm leading-relaxed text-slate-600">${esc(t.citTryBody)}</p>
         <div class="mt-4 flex items-center gap-2 rounded-lg bg-slate-50 p-2"><span class="min-w-0 flex-1 truncate px-1 font-mono text-xs text-slate-700" dir="ltr">${esc(url)}</span><button type="button" id="citCopy" class="btn-outline !h-7 shrink-0">${esc(t.copy)}</button></div>
         <a href="${esc(url)}" target="_blank" rel="noopener" class="btn-primary mt-4 h-10 w-full text-base">${ic('megaphone', 'size-4')}${esc(t.citOpen)}</a>
       </div>
-      <div class="rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-3">
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-3 min-w-0">
         <div class="flex items-center justify-between border-b border-slate-100 p-4"><h3 class="font-semibold text-slate-900">${esc(t.citRecent)}</h3><span class="text-sm text-slate-500">${list.length}</span></div>
         <ul class="divide-y divide-slate-100">${list.slice(0, 8).map(d => { const n = (d.citizen.notes || []).slice(-1)[0] || {}; return `<li><button type="button" data-open="${d.id}" class="flex w-full gap-3 p-4 text-start hover:bg-slate-50">
           ${d.photo ? `<img src="${API}/api/photo/${encodeURIComponent(d.photo)}" alt="" class="size-16 shrink-0 rounded-lg object-cover">` : `<span class="grid size-16 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-600">${ic('megaphone', 'size-6')}</span>`}

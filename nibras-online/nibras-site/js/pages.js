@@ -39,7 +39,7 @@ window.PAGES_I18N = {
     gpsGood: 'ممتازة', gpsOk: 'جيدة', gpsWeak: 'ضعيفة', partsTitle: 'مكونات الجهاز', logTitle: 'سجل نشاط الجهاز', logSub: 'كل رصد خام يصل من الأجهزة ونتيجة فحصه في الباك إند',
     logTime: 'الوقت', logSrc: 'المصدر', logWhat: 'الرصد', logResult: 'النتيجة', logEmpty: 'لا يوجد نشاط بعد',
     accepted: 'قُبل ←', rejected: 'مرفوض',
-    reasons: { no_gps: 'لا يوجد موقع GPS', gps_weak: 'إشارة GPS ضعيفة', outside_ksa: 'خارج المملكة', stale_location: 'موقع الكاميرا قديم', unknown_type: 'نوع غير معروف', unknown_source: 'مصدر غير معروف' },
+    reasons: { no_gps: 'لا يوجد موقع GPS', gps_weak: 'إشارة GPS ضعيفة', outside_ksa: 'خارج المملكة', stale_location: 'موقع الكاميرا قديم', unknown_type: 'نوع غير معروف', not_road_defect: 'الصورة ما فيها عيب طريق', no_photo: 'بدون صورة', unknown_source: 'مصدر غير معروف' },
     srcCitizen: 'مواطن', camTitle: 'ما تراه الكاميرا الآن', camLive: 'الكاميرا شغالة', camOld: 'آخر صورة قديمة — الكاميرا طافية؟', camSeen: 'ما رصده الموديل', camNothing: 'لا شيء — الطريق سليم', camNone: 'لم تصل صورة من الكاميرا بعد', camHint: 'تتحدث كل بضع ثوانٍ. استخدمها لضبط زاوية الكاميرا والإضاءة.', replayAlert: 'عرض تنبيه هذا البلاغ', reDetected: 'رُصد نفس العيب مرة ثانية:', citizenOnly: 'بلاغ مواطن — بانتظار التحقق', alertCitizen: 'بلاغ مواطن جديد', alertCitizenSub: 'وصل بلاغ من مواطن — بانتظار تحقق جهاز نبراس',
     parts: [
       ['cpu', 'ESP32', 'المعالج الرئيسي: يقرأ الحساسات ويتصل بالإنترنت عبر Wi-Fi ويرسل الرصد.'],
@@ -92,7 +92,7 @@ window.PAGES_I18N = {
     gpsGood: 'Excellent', gpsOk: 'Good', gpsWeak: 'Weak', partsTitle: 'Device components', logTitle: 'Device activity log', logSub: 'Every raw detection received from the devices and how the backend handled it',
     logTime: 'Time', logSrc: 'Source', logWhat: 'Detection', logResult: 'Result', logEmpty: 'No activity yet',
     accepted: 'Accepted →', rejected: 'Rejected',
-    reasons: { no_gps: 'No GPS fix', gps_weak: 'Weak GPS signal', outside_ksa: 'Outside Saudi Arabia', stale_location: 'Camera location too old', unknown_type: 'Unknown type', unknown_source: 'Unknown source' },
+    reasons: { no_gps: 'No GPS fix', gps_weak: 'Weak GPS signal', outside_ksa: 'Outside Saudi Arabia', stale_location: 'Camera location too old', unknown_type: 'Unknown type', not_road_defect: 'Photo shows no road defect', no_photo: 'No photo', unknown_source: 'Unknown source' },
     srcCitizen: 'Citizen', camTitle: 'What the camera sees now', camLive: 'Camera is live', camOld: 'Last frame is old — is the camera off?', camSeen: 'Model detections', camNothing: 'Nothing — road looks fine', camNone: 'No frame received from the camera yet', camHint: 'Refreshes every few seconds. Use it to adjust the camera angle and lighting.', replayAlert: 'Show this alert again', reDetected: 'Same defect detected again:', citizenOnly: 'Citizen report — awaiting verification', alertCitizen: 'New citizen report', alertCitizenSub: 'A citizen reported a defect — awaiting verification by the Nibras device',
     parts: [
       ['cpu', 'ESP32', 'Main controller: reads the sensors, connects over Wi-Fi and sends detections.'],
@@ -277,7 +277,7 @@ const CITIZEN_URL = '';
 function renderCitizen() {
   const el = $('#citizenBody'); if (!el) return;
   const t = T();
-  const url = CITIZEN_URL || `${API || location.origin}/citizen`;
+  const url = CITIZEN_URL || (VIEWER ? new URL('citizen.html', location.href.split('#')[0]).href : `${API || location.origin}/citizen`);
   const list = DEFECTS.filter(d => d.citizen).sort((a, b) => (b.citizen.ts || 0) - (a.citizen.ts || 0));
   el.innerHTML = `${pageHead(t.citTitle, t.citSub)}
     <div class="grid gap-4 lg:grid-cols-5">

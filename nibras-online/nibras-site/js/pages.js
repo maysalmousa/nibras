@@ -34,6 +34,8 @@ window.PAGES_I18N = {
     mTitle: 'القياسات', mSub: 'أبعاد العيوب المفتوحة كما قاستها الكاميرا وحساس العمق', mCrack: 'مجموع أطوال التشققات', mFaded: 'مجموع أطوال الخطوط الباهتة', mDepthAvg: 'متوسط عمق الحفر', mDepthMax: 'أعمق حفرة', mMeasured: 'عيب مقاس', mWaitDepth: 'بانتظار حساس العمق', mM: 'م', mCm: 'سم', lenShort: 'الطول', diaShort: 'القطر', depthShort: 'العمق',
     dashTitle: 'لوحة المؤشرات', dashSub: 'مؤشرات حالة الطرق محسوبة مباشرة من الرصد الحقيقي',
     kTotal: 'إجمالي البلاغات', kConfirmed: 'بلاغات مؤكدة', kHigh: 'خطورة عالية مفتوحة', kProgress: 'قيد المعالجة', kFixed: 'نسبة الإصلاح',
+    prTitle: 'أولويات الإصلاح — أصلح هذي أول', prSub: 'ترتيب تلقائي للعيوب المفتوحة حسب الخطورة وعدد مرات الرصد ومدة بقائها بدون إصلاح', prEmpty: 'لا توجد عيوب مفتوحة 🎉',
+    prSevHigh: 'خطورة عالية', prSevMed: 'خطورة متوسطة', prSevLow: 'خطورة منخفضة', prHits: 'انرصد {n} مرات', prAge: 'مفتوح من {d}', prConfirmed: 'مؤكد بالحساس والكاميرا', prCitizen: 'بلّغ عنه مواطن', prScore: 'درجة الأولوية',
     fxTitle: 'متابعة الإصلاح', fxSub: 'بعد ما تحدد الجهة إن العيب تصلح، يتحقق جهاز نبراس منه لما يمر من نفس المكان',
     fxAvg: 'متوسط مدة الإصلاح', fxFast: 'أسرع إصلاح', fxSlow: 'أبطأ إصلاح', fxVerified: 'إصلاح مؤكد بالجهاز', fxPending: 'بانتظار تحقق الجهاز', fxFailed: 'قالوا تصلح ولسا موجود',
     fxRow: 'التحقق من الإصلاح', fxDur: 'مدة الإصلاح', fxOk: 'تحقق منه الجهاز', fxWait: 'بانتظار مرور الجهاز للتحقق', fxBad: 'الجهاز رصده مرة ثانية بعد الإصلاح', fxAt: 'بتاريخ', fxNone: 'لا يوجد إصلاح مؤكد بعد',
@@ -92,6 +94,8 @@ window.PAGES_I18N = {
     mTitle: 'Measurements', mSub: 'Dimensions of open defects as measured by the camera and the depth sensor', mCrack: 'Total crack length', mFaded: 'Total faded marking length', mDepthAvg: 'Average pothole depth', mDepthMax: 'Deepest pothole', mMeasured: 'measured', mWaitDepth: 'Waiting for depth sensor', mM: 'm', mCm: 'cm', lenShort: 'Length', diaShort: 'Width', depthShort: 'Depth',
     dashTitle: 'Dashboard', dashSub: 'Road condition indicators computed live from real detections',
     kTotal: 'Total reports', kConfirmed: 'Confirmed', kHigh: 'Open high severity', kProgress: 'In progress', kFixed: 'Fix rate',
+    prTitle: 'Repair priorities — fix these first', prSub: 'Open defects ranked automatically by severity, number of detections and how long they have stayed unrepaired', prEmpty: 'No open defects 🎉',
+    prSevHigh: 'High severity', prSevMed: 'Medium severity', prSevLow: 'Low severity', prHits: 'detected {n} times', prAge: 'open for {d}', prConfirmed: 'confirmed by sensor + camera', prCitizen: 'reported by a citizen', prScore: 'Priority score',
     fxTitle: 'Repair tracking', fxSub: 'After the authority marks a defect as fixed, the Nibras device verifies it when it passes the same spot',
     fxAvg: 'Average repair time', fxFast: 'Fastest repair', fxSlow: 'Slowest repair', fxVerified: 'Repairs verified by device', fxPending: 'Awaiting device check', fxFailed: 'Marked fixed but still there',
     fxRow: 'Repair check', fxDur: 'Repair time', fxOk: 'Verified by device', fxWait: 'Waiting for the device to pass', fxBad: 'Device detected it again after repair', fxAt: 'on', fxNone: 'No verified repairs yet',
@@ -197,6 +201,24 @@ function renderDashboard() {
     ['alert', t.fxFailed, fmtNum(cnt(d => d.fixCheck === 'failed')), '', 'text-rose-600'],
   ];
   const fixHtml = card(t.fxTitle, `<p class="-mt-2 mb-3 text-sm text-slate-500">${esc(t.fxSub)}</p><div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">${fxCards.map(([icn, l, v, sub, c]) => `<div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(l)}</div><div class="mt-2 text-2xl font-bold tabular-nums ${c}">${esc(v)}</div>${sub ? `<div class="mt-1 text-xs text-slate-500">${esc(sub)}</div>` : ''}</div>`).join('')}</div>`);
+  // أولويات الإصلاح: درجة = الخطورة × (عدد مرات الرصد) × (مدة بقائه مفتوح) × (مؤكد؟) × (بلاغ مواطن؟)
+  const SEVW = { high: 3, medium: 2, low: 1 }, now = Date.now();
+  const prio = d => {
+    const days = d.firstSeen ? Math.max(0, (now - d.firstSeen) / 86400000) : 0;
+    return (SEVW[d.severity] || 1) * (1 + 0.5 * Math.log2(d.hits || 1)) * (1 + Math.min(days, 30) / 30) * (d.confirmed ? 1.2 : 1) * (d.citizen ? 1.1 : 1);
+  };
+  const ranked = D.filter(d => d.status !== 'fixed' && d.status !== 'dismissed').map(d => ({ d, s: prio(d) })).sort((a, b) => b.s - a.s).slice(0, 5);
+  const maxS = ranked.length ? ranked[0].s : 1;
+  const why = d => [d.severity === 'high' ? t.prSevHigh : d.severity === 'medium' ? t.prSevMed : t.prSevLow,
+    (d.hits || 1) > 1 ? t.prHits.replace('{n}', d.hits) : null,
+    d.firstSeen ? t.prAge.replace('{d}', durTxt(now - d.firstSeen)) : null,
+    d.confirmed ? t.prConfirmed : null, d.citizen ? t.prCitizen : null].filter(Boolean);
+  const prioHtml = card(t.prTitle, `<p class="-mt-2 mb-3 text-sm text-slate-500">${esc(t.prSub)}</p>` + (ranked.length ? `<ol class="space-y-2">${ranked.map(({ d, s: sc }, i) => `<li><button type="button" data-open="${d.id}" class="flex w-full items-center gap-3 rounded-lg border border-slate-200 p-3 text-start transition-colors hover:bg-slate-50">
+      <span class="grid size-9 shrink-0 place-items-center rounded-full text-base font-bold text-white" style="background:${SEV_COLOR[d.severity]}">${i + 1}</span>
+      <span class="min-w-0 flex-1"><span class="block truncate text-sm font-semibold text-slate-900">${esc(t.types[d.type])} · <span class="font-mono text-xs text-slate-500">${d.id}</span> <span class="text-xs font-normal text-slate-500">— ${esc(placeName(d))}</span></span>
+        <span class="mt-1 flex flex-wrap gap-1.5">${why(d).map(w => `<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">${esc(w)}</span>`).join('')}</span></span>
+      <span class="hidden w-24 shrink-0 sm:block" title="${esc(t.prScore)}"><span class="block h-2 overflow-hidden rounded-full bg-slate-100"><span class="block h-full rounded-full" style="width:${Math.round(sc / maxS * 100)}%;background:${SEV_COLOR[d.severity]}"></span></span><span class="mt-1 block text-center text-[11px] text-slate-500"><bdo dir="ltr">${sc.toFixed(1)}</bdo></span></span>
+    </button></li>`).join('')}</ol>` : `<p class="py-6 text-center text-sm text-slate-500">${esc(t.prEmpty)}</p>`));
   const measuresHtml = card(t.mTitle, `<p class="-mt-2 mb-3 text-sm text-slate-500">${esc(t.mSub)}</p><div class="grid grid-cols-2 gap-3 xl:grid-cols-4">${mCards.map(([icn, l, v, sub]) => `<div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(l)}</div><div class="mt-2 text-2xl font-bold tabular-nums text-slate-900"><bdo dir="ltr">${esc(v)}</bdo></div>${sub ? `<div class="mt-1 text-xs text-slate-500">${esc(sub)}</div>` : ''}</div>`).join('')}</div>`);
   const days = [];
   for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(fmt(d)); }
@@ -207,6 +229,7 @@ function renderDashboard() {
     <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">${kpis.map(([icn, l, v, c]) => `
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(l)}</div><div class="mt-2 text-3xl font-bold tabular-nums ${c}"><bdo dir="ltr">${v}</bdo></div></div>`).join('')}
     </div>
+    ${prioHtml}
     ${measuresHtml}
     ${fixHtml}
     <div class="grid gap-4 lg:grid-cols-2">

@@ -183,6 +183,7 @@ const fbPost = (path, body) => fetch(`${FB}${path}.json`, { method: 'POST', head
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 $('#form').onsubmit = async e => {
   e.preventDefault(); $('#err').classList.add('hidden');
+  if (!photo) return showErr('صوّر العيب أو ارفع صورته — نحتاج الصورة عشان نتأكد إنه عيب في الطريق');
   if (!ll) return showErr('حدد مكان العيب على الخريطة أولاً');
   if (ll[0] < 15 || ll[0] > 33 || ll[1] < 33 || ll[1] > 57) return showErr('المكان المحدد خارج المملكة');
   let last = 0; try { last = +localStorage.getItem('nibras-citizen-last') || 0; } catch (_) {}
@@ -194,15 +195,22 @@ $('#form').onsubmit = async e => {
     const raw = { src: 'citizen', type, lat: ll[0], lng: ll[1], name: $('#name').value.trim().slice(0, 60), desc: $('#desc').value.trim().slice(0, 500), ts: { '.sv': 'timestamp' } };
     if (photoKey) raw.photo = photoKey;
     const key = (await fbPost('/raw', raw)).name;
-    try { localStorage.setItem('nibras-citizen-last', Date.now()); } catch (_) {}
-    $('#doneId').textContent = '✓';
-    ['#formSec', '#hero', '#how'].forEach(q => $(q).classList.add('hidden')); $('#done').classList.remove('hidden'); window.scrollTo(0, 0);
-    // ننتظر الباك إند يعطي البلاغ رقم (إذا كان شغّال)
-    for (let i = 0; i < 10; i++) {
+    // ننتظر نتيجة فحص الصورة من نظام نبراس (نموذج الذكاء الاصطناعي نفسه حق الكاميرا)
+    btn.querySelector('span').textContent = 'جاري فحص الصورة…';
+    let id = null, rej = null;
+    for (let i = 0; i < 30 && !id && !rej; i++) {
       await sleep(1000);
-      const id = await fetch(`${FB}/raw/${key}/report.json`).then(r => r.json()).catch(() => null);
-      if (typeof id === 'string') { $('#doneId').textContent = id; break; }
+      const r = await fetch(`${FB}/raw/${key}.json`).then(r => r.json()).catch(() => null);
+      if (r && typeof r.report === 'string') id = r.report; else if (r && r.rejected) rej = r.rejected;
     }
+    if (rej) {
+      const msg = { not_road_defect: 'ما قدرنا نقبل البلاغ: الصورة ما يبين فيها عيب في الطريق (حفرة أو تشقق أو خطوط باهتة). صوّر العيب من قريب وبوضوح وحاول مرة ثانية.',
+        no_photo: 'ما وصلت الصورة — ارفعها مرة ثانية وحاول.', outside_ksa: 'المكان المحدد خارج المملكة.' };
+      return showErr(msg[rej] || 'ما قدرنا نقبل البلاغ — تأكد من الصورة والمكان وحاول مرة ثانية.');
+    }
+    try { localStorage.setItem('nibras-citizen-last', Date.now()); } catch (_) {}
+    $('#doneId').textContent = id || '✓';
+    ['#formSec', '#hero', '#how'].forEach(q => $(q).classList.add('hidden')); $('#done').classList.remove('hidden'); window.scrollTo(0, 0);
   } catch (err) { showErr('تعذر الإرسال — تأكد من الإنترنت وحاول مرة ثانية'); }
   finally { btn.disabled = false; btn.querySelector('span').textContent = 'إرسال البلاغ'; }
 };

@@ -6,6 +6,9 @@
    ===================================================================== */
 
 window.PAGES_ICONS = {
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  hourglass: '<path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>',
   gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
   cpu: '<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>',
   megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
@@ -30,7 +33,11 @@ window.PAGES_I18N = {
     // Dashboard
     mTitle: 'القياسات', mSub: 'أبعاد العيوب المفتوحة كما قاستها الكاميرا وحساس العمق', mCrack: 'مجموع أطوال التشققات', mFaded: 'مجموع أطوال الخطوط الباهتة', mDepthAvg: 'متوسط عمق الحفر', mDepthMax: 'أعمق حفرة', mMeasured: 'عيب مقاس', mWaitDepth: 'بانتظار حساس العمق', mM: 'م', mCm: 'سم', lenShort: 'الطول', diaShort: 'القطر', depthShort: 'العمق',
     dashTitle: 'لوحة المؤشرات', dashSub: 'مؤشرات حالة الطرق محسوبة مباشرة من الرصد الحقيقي',
-    kTotal: 'إجمالي البلاغات', kConfirmed: 'بلاغات مؤكدة', kHigh: 'خطورة عالية مفتوحة', kProgress: 'قيد المعالجة', kFixed: 'نسبة الإصلاح', kCitizen: 'بلاغات المواطنين',
+    kTotal: 'إجمالي البلاغات', kConfirmed: 'بلاغات مؤكدة', kHigh: 'خطورة عالية مفتوحة', kProgress: 'قيد المعالجة', kFixed: 'نسبة الإصلاح',
+    fxTitle: 'متابعة الإصلاح', fxSub: 'بعد ما تحدد الجهة إن العيب تصلح، يتحقق جهاز نبراس منه لما يمر من نفس المكان',
+    fxAvg: 'متوسط مدة الإصلاح', fxFast: 'أسرع إصلاح', fxSlow: 'أبطأ إصلاح', fxVerified: 'إصلاح مؤكد بالجهاز', fxPending: 'بانتظار تحقق الجهاز', fxFailed: 'قالوا تصلح ولسا موجود',
+    fxRow: 'التحقق من الإصلاح', fxDur: 'مدة الإصلاح', fxOk: 'تحقق منه الجهاز', fxWait: 'بانتظار مرور الجهاز للتحقق', fxBad: 'الجهاز رصده مرة ثانية بعد الإصلاح', fxAt: 'بتاريخ', fxNone: 'لا يوجد إصلاح مؤكد بعد',
+    uMin: 'دقيقة', uHour: 'ساعة', uDay: 'يوم', kCitizen: 'بلاغات المواطنين',
     byType: 'حسب نوع العيب', byStatus: 'حسب حالة البلاغ', bySeverity: 'حسب درجة الخطورة', byCity: 'حسب المدينة', last14: 'الرصد خلال آخر 14 يوماً', recent: 'أحدث البلاغات',
     noDataYet: 'لا توجد بيانات بعد — بانتظار أول رصد من جهاز نبراس', viewAll: 'عرض السجل',
     // Device
@@ -84,7 +91,11 @@ window.PAGES_I18N = {
     navDashboard: 'Dashboard', navDevice: 'Nibras Device', navCitizen: 'Citizen Report', navQuality: 'Road Quality', navReports: 'Reports', navAbout: 'About',
     mTitle: 'Measurements', mSub: 'Dimensions of open defects as measured by the camera and the depth sensor', mCrack: 'Total crack length', mFaded: 'Total faded marking length', mDepthAvg: 'Average pothole depth', mDepthMax: 'Deepest pothole', mMeasured: 'measured', mWaitDepth: 'Waiting for depth sensor', mM: 'm', mCm: 'cm', lenShort: 'Length', diaShort: 'Width', depthShort: 'Depth',
     dashTitle: 'Dashboard', dashSub: 'Road condition indicators computed live from real detections',
-    kTotal: 'Total reports', kConfirmed: 'Confirmed', kHigh: 'Open high severity', kProgress: 'In progress', kFixed: 'Fix rate', kCitizen: 'Citizen reports',
+    kTotal: 'Total reports', kConfirmed: 'Confirmed', kHigh: 'Open high severity', kProgress: 'In progress', kFixed: 'Fix rate',
+    fxTitle: 'Repair tracking', fxSub: 'After the authority marks a defect as fixed, the Nibras device verifies it when it passes the same spot',
+    fxAvg: 'Average repair time', fxFast: 'Fastest repair', fxSlow: 'Slowest repair', fxVerified: 'Repairs verified by device', fxPending: 'Awaiting device check', fxFailed: 'Marked fixed but still there',
+    fxRow: 'Repair check', fxDur: 'Repair time', fxOk: 'Verified by device', fxWait: 'Waiting for the device to pass', fxBad: 'Device detected it again after repair', fxAt: 'on', fxNone: 'No verified repairs yet',
+    uMin: 'min', uHour: 'h', uDay: 'days', kCitizen: 'Citizen reports',
     byType: 'By defect type', byStatus: 'By status', bySeverity: 'By severity', byCity: 'By city', last14: 'Detections in the last 14 days', recent: 'Latest reports',
     noDataYet: 'No data yet — waiting for the first detection from the Nibras device', viewAll: 'Open list',
     devTitle: 'Nibras Device', devSub: 'Live device status, components and activity log',
@@ -175,6 +186,17 @@ function renderDashboard() {
     ['gauge', t.mDepthAvg, deep.length ? `${(deep.reduce((s, d) => s + d.depthCm, 0) / deep.length).toFixed(1)} ${t.mCm}` : '—', deep.length ? `${fmtNum(deep.length)} ${t.mMeasured}` : t.mWaitDepth],
     ['alert', t.mDepthMax, deep.length ? `${Math.max(...deep.map(d => d.depthCm)).toFixed(1)} ${t.mCm}` : '—', deep.length ? '' : t.mWaitDepth],
   ];
+  // متابعة الإصلاح: المدة من أول رصد إلى إصلاحه، للإصلاحات اللي أكدها الجهاز
+  const vf = D.filter(d => d.fixCheck === 'verified' && d.fixMs != null), fxMs = vf.map(d => d.fixMs);
+  const fxCards = [
+    ['clock', t.fxAvg, fxMs.length ? durTxt(fxMs.reduce((a, b) => a + b, 0) / fxMs.length) : '—', fxMs.length ? '' : t.fxNone, 'text-slate-900'],
+    ['zap', t.fxFast, fxMs.length ? durTxt(Math.min(...fxMs)) : '—', '', 'text-emerald-700'],
+    ['hourglass', t.fxSlow, fxMs.length ? durTxt(Math.max(...fxMs)) : '—', '', 'text-amber-700'],
+    ['circle-check', t.fxVerified, fmtNum(vf.length), '', 'text-emerald-700'],
+    ['activity', t.fxPending, fmtNum(cnt(d => d.status === 'fixed' && d.fixCheck === 'pending')), '', 'text-sky-700'],
+    ['alert', t.fxFailed, fmtNum(cnt(d => d.fixCheck === 'failed')), '', 'text-rose-600'],
+  ];
+  const fixHtml = card(t.fxTitle, `<p class="-mt-2 mb-3 text-sm text-slate-500">${esc(t.fxSub)}</p><div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">${fxCards.map(([icn, l, v, sub, c]) => `<div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(l)}</div><div class="mt-2 text-2xl font-bold tabular-nums ${c}">${esc(v)}</div>${sub ? `<div class="mt-1 text-xs text-slate-500">${esc(sub)}</div>` : ''}</div>`).join('')}</div>`);
   const measuresHtml = card(t.mTitle, `<p class="-mt-2 mb-3 text-sm text-slate-500">${esc(t.mSub)}</p><div class="grid grid-cols-2 gap-3 xl:grid-cols-4">${mCards.map(([icn, l, v, sub]) => `<div class="rounded-lg border border-slate-200 bg-slate-50/60 p-4"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(l)}</div><div class="mt-2 text-2xl font-bold tabular-nums text-slate-900"><bdo dir="ltr">${esc(v)}</bdo></div>${sub ? `<div class="mt-1 text-xs text-slate-500">${esc(sub)}</div>` : ''}</div>`).join('')}</div>`);
   const days = [];
   for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(fmt(d)); }
@@ -186,6 +208,7 @@ function renderDashboard() {
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(l)}</div><div class="mt-2 text-3xl font-bold tabular-nums ${c}"><bdo dir="ltr">${v}</bdo></div></div>`).join('')}
     </div>
     ${measuresHtml}
+    ${fixHtml}
     <div class="grid gap-4 lg:grid-cols-2">
       ${card(t.byType, barList(TYPES.map(k => ({ label: t.types[k], value: cnt(d => d.type === k), color: TYPE_COLOR[k] })).filter(i => i.value || n === 0), n))}
       ${card(t.byStatus, barList(STATUS_KEYS.filter(k => k !== 'dismissed').map(k => ({ label: t.statuses[k], value: cnt(d => d.status === k), color: STATUS_COLOR[k] })), n))}

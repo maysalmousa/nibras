@@ -132,6 +132,8 @@ function depthHtml(d){const t=T();return d.depthCm!=null?`<span><bdo dir="ltr">$
 function details(d,compact){const t=T();const rows=[[t.type,esc(t.types[d.type])],[t.severity,badge(d.severity)]];
   if(d.live)rows.push([t.status,statusBadge(d.status)],[t.verify,verifyHtml(d)]);
   rows.push([t.location,esc(placeName(d))],[t.coordinates,`<bdo dir="ltr" class="font-mono text-xs">${d.lat}, ${d.lng}</bdo>`],[t.dateDetected,d.firstSeen?`<span>${esc(tfmt(d.firstSeen))}</span>`:`<bdo dir="ltr">${d.date}</bdo>`]);
+  if(d.live&&d.fixCheck)rows.push([t.fxRow,fixHtml(d)]);
+  if(d.live&&d.fixMs!=null&&d.status==='fixed')rows.push([t.fxDur,`<span class="font-semibold text-slate-900">${esc(durTxt(d.fixMs))}</span>`]);
   if(d.live&&d.hits>1)rows.push([t.hits,`${d.hits} · <span class="text-slate-500">${esc(t.lastSeen)}: <span>${esc(tfmt(d.lastSeen))}</span></span>`]);
   if(d.shock!=null)rows.push([t.shock,`<bdo dir="ltr">${d.shock} g</bdo>`]);
   if(d.conf!=null)rows.push([t.confidence,`<bdo dir="ltr">${Math.round(d.conf*100)}%</bdo>`]);
@@ -264,7 +266,14 @@ function fromReport(r){return{id:r.id,key:r.id,live:true,
   firstSeen:r.firstSeen||null,lastSeen:r.lastSeen||r.firstSeen||null,
   shock:r.sensor&&r.sensor.g!=null?+r.sensor.g:null,conf:r.camera&&r.camera.conf!=null?+r.camera.conf:null,sizeCm:r.camera&&r.camera.sizeCm?+r.camera.sizeCm:null,depthCm:r.depthCm?+r.depthCm:null,
   photo:typeof r.photo==='string'&&r.photo?r.photo:null,source:['both','camera','sensor','citizen'].includes(r.source)?r.source:'sensor',citizen:r.citizen||null,
-  confirmed:!!r.confirmed,status:STATUS_KEYS.includes(r.status)?r.status:'new',hits:r.hits||1,areaM2:null}}
+  confirmed:!!r.confirmed,status:STATUS_KEYS.includes(r.status)?r.status:'new',hits:r.hits||1,areaM2:null,
+  fixCheck:['pending','verified','failed'].includes(r.fixCheck)?r.fixCheck:null,fixedAt:r.fixedAt||null,verifiedAt:r.verifiedAt||null,
+  fixMs:r.fixedAt&&r.firstSeen?Math.max(0,r.fixedAt-r.firstSeen):null}}
+// مدة مقروءة: دقائق / ساعات / أيام
+function durTxt(ms){const t=T(),m=ms/60000;return m<60?`${Math.max(1,Math.round(m))} ${t.uMin}`:m<1440?`${(m/60).toFixed(m<600?1:0)} ${t.uHour}`:`${(m/1440).toFixed(m<14400?1:0)} ${t.uDay}`}
+function fixHtml(d){const t=T();if(d.fixCheck==='verified')return `<span class="inline-flex items-center gap-1 font-medium text-emerald-700">${ic('circle-check','size-4')}${esc(t.fxOk)}</span>${d.verifiedAt?` <span class="text-slate-500">· ${esc(t.fxAt)} ${esc(tfmt(d.verifiedAt))}</span>`:''}`;
+  if(d.fixCheck==='pending')return `<span class="inline-flex items-center gap-1 text-sky-700">${ic('activity','size-4')}${esc(t.fxWait)}</span>`;
+  if(d.fixCheck==='failed')return `<span class="inline-flex items-center gap-1 text-rose-700">${ic('circle-alert','size-4')}${esc(t.fxBad)}</span>`;return ''}
 const REPORTS=new Map();
 function rebuild(){LIVE=[...REPORTS.values()].filter(r=>r.status!=='dismissed').map(fromReport);DEFECTS=LIVE;
   markers.forEach(({m})=>m.remove());markers=[];LIVE.forEach(addMarker);renderLegend();renderDefects();renderPages()}

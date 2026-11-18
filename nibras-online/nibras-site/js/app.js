@@ -84,7 +84,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 
 /* ---------- Static paint ---------- */
-const NAV=[['landing','house','navHome'],['dashboard','gauge','navDashboard'],['map','map','navMap'],['defects','table','navDefects'],['device','cpu','navDevice'],['citizen','megaphone','navCitizen'],['quality','activity','navQuality'],['code','ruler','navCode'],['reports','file-text','navReports'],['about','info','navAbout'],['entities','building','navEntities'],['settings','settings','navSettings']];
+const NAV=[['landing','house','navHome'],['dashboard','gauge','navDashboard'],['map','map','navMap'],['defects','table','navDefects'],['code','ruler','navCode'],['device','cpu','navDevice'],['citizen','megaphone','navCitizen'],['quality','activity','navQuality'],['reports','file-text','navReports'],['about','info','navAbout'],['entities','building','navEntities'],['settings','settings','navSettings']];
 if(VIEWER)NAV.splice(NAV.findIndex(n=>n[0]==='device'),1);
 function paintNav(){
   $$('[data-nav]').forEach(n=>{const top=n.dataset.nav==='top',items=top?NAV.slice(0,9):NAV;

@@ -326,8 +326,9 @@ function connectLive(){if(VIEWER)return connectViewer();
     if(!liveStarted&&LIVE.length&&map){liveStarted=true;map.fitBounds(L.latLngBounds(LIVE.map(d=>[d.lat,d.lng])).pad(.3),{maxZoom:16})}liveStarted=true});
   es.addEventListener('report',e=>{const m=JSON.parse(e.data),old=REPORTS.get(m.report.id);REPORTS.set(m.report.id,m.report);rebuild();
     if(m.report.status==='dismissed')return;
-    if(m.isNew||m.confirmedNow||m.citizen){const d=fromReport(m.report);showBigAlert(d,m.citizen);alertSound(d.severity);if(map)map.flyTo([d.lat,d.lng],17,{duration:1.2})}
-    else if(old&&(m.report.hits||1)>(old.hits||1)){const t=T();toast(`${t.reDetected} ${m.report.id} — ${t.types[m.report.type]} (${m.report.hits}×)`);alertSound('low')}});
+    // الإنذار الكبير + الصوت: بس لعيب جديد (نوع جديد بالمكان). نفس النوع بنفس المكان = تنبيه صغير صامت بدون تكرار الإنذار
+    if(m.isNew||m.citizen){const d=fromReport(m.report);showBigAlert(d,m.citizen);alertSound(d.severity);if(map)map.flyTo([d.lat,d.lng],17,{duration:1.2})}
+    else if(old&&(m.report.hits||1)>(old.hits||1)){const t=T();toast(`${t.reDetected} ${m.report.id} — ${t.types[m.report.type]} (${m.report.hits}×)`)}});
   es.addEventListener('device',e=>{device=JSON.parse(e.data);paintDevice()});
   es.addEventListener('raw',e=>onRawLog(JSON.parse(e.data)));
   es.addEventListener('health',e=>setBackend(true,JSON.parse(e.data)));

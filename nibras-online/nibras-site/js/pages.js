@@ -44,6 +44,25 @@ window.PAGES_I18N = {
     noDataYet: 'لا توجد بيانات بعد — بانتظار أول رصد من جهاز نبراس', viewAll: 'عرض السجل',
     // Device
     devTitle: 'جهاز نبراس', devSub: 'حالة الجهاز المباشرة ومكوناته وسجل نشاطه',
+    slopeTitle: 'ميلان الشارع — مباشر', slopeSub: 'يقيسه حساس MPU-6050 من اتجاه الجاذبية: السيارة تميل مع الشارع، فميلان الجهاز = ميلان الشارع',
+    slopeCross: 'الميلان العرضي', slopeCrossHint: 'يمين / يسار — يصرّف مياه الأمطار', slopeGrade: 'الميلان الطولي', slopeGradeHint: 'طلعة / نزلة',
+    slopeOk: 'مناسب — المياه تنصرف', slopePoor: 'أقل من الحد — خطر تجمع مياه', slopeNone: 'بانتظار قراءة الميلان من الجهاز (حدّثي كود الجهاز الرئيسي)',
+    slopeRef: 'المرجع: الميلان العرضي المعتاد للطرق المسفلتة 1.5% – 2%. أقل من {min}% يعتبر تصريفاً ضعيفاً.', slopeLeft: 'مائل لليسار', slopeRight: 'مائل لليمين', slopeFlat: 'مستوٍ',
+    navCode: 'معيار كود الطرق',
+    cdTitle: 'المقارنة مع معيار كود الطرق السعودي', cdSub: 'نبراس يقارن كل عيب يرصده بجداول كود الطرق السعودي SHC 501 (الملحق A — عيوب الرصف المرن) ويحدد درجة خطورته تلقائياً من القياس الحقيقي',
+    cdMeasured: 'قُيّمت بجداول الكود', cdMeasuredSub: 'بقياس العمق والقطر من الجهاز', cdCamera: 'قُيّمت بالكاميرا', cdCameraSub: 'الكود يقيسها بالعرض أو بالنظر', cdHigh: 'خطورة عالية حسب الكود', cdHighSub: 'تحتاج أولوية في الصيانة', cdDrain: 'خطر تجمع مياه', cdDrainSub: 'ميلان عرضي أقل من 1.5%',
+    cdTable: 'مقارنة كل عيب بالمعيار', cdId: 'البلاغ', cdType: 'العيب', cdMeasure: 'القياس', cdRule: 'البند في الكود ونتيجة المقارنة', cdResult: 'الخطورة', cdAction: 'المعالجة المقترحة', cdNone: 'لا توجد عيوب مرصودة بعد',
+    cdDepth: 'عمق', cdDia: 'قطر', cdLen: 'طول', cdMm: 'مم', cdByCode: 'بالكود', cdByCam: 'بالكاميرا',
+    cdStd: 'المعيار — كود الطرق السعودي SHC 501', cdPotT: 'الحفر — جدول A-1 (صفحة 131)', cdPotDepth: 'أقصى عمق للحفرة', cdPotDia: 'متوسط القطر',
+    cdPotBig: 'إذا القطر أكبر من 750 مم: العمق 25 مم أو أقل ← متوسطة، أكثر من 25 مم ← عالية.',
+    cdDepT: 'الهبوط — الفقرة A.1.6 (صفحة 124)', cdRutT: 'التخدد — الفقرة A.1.15 (صفحة 132)', cdCrT: 'التشققات الطولية والعرضية — الفقرة A.1.10 (صفحة 127)',
+    cdDepRows: [['13 – 25 مم', 'low'], ['25 – 50 مم', 'medium'], ['أكثر من 50 مم', 'high']],
+    cdRutRows: [['6 – 13 مم', 'low'], ['13 – 25 مم', 'medium'], ['أكثر من 25 مم', 'high']],
+    cdCrRows: [['عرض أقل من 10 مم', 'low'], ['عرض 10 – 75 مم', 'medium'], ['عرض أكثر من 75 مم', 'high']],
+    cdCrNote: 'الجهاز يقيس طول الشق وليس عرضه، لذلك خطورة التشققات تحددها الكاميرا.',
+    cdOut: 'خارج نطاق SHC 501', cdOutBody: 'الخطوط الأرضية الباهتة ليست ضمن عيوب الرصف في SHC 501. وحد الميلان العرضي 1.5% مأخوذ من معايير تصميم الطرق (الميلان المعتاد 1.5% – 2%)، لأن SHC 501 يذكر الميلان العرضي للطرق غير المسفلتة فقط (الفقرة C.1.1). المعالجة المقترحة مبنية على تقسيم الصيانة في SHC 501 (روتينية، دورية، إعادة سفلتة — الفقرات 5.7.2 إلى 5.7.4).',
+    slopeAt: 'ميلان الشارع عند العيب', slopeDrain: 'تصريف المياه',
+    codeRule: 'التقييم حسب الكود', codeAction: 'المعالجة المقترحة', codeRef: 'المرجع',
     devConn: 'الاتصال', devGps: 'إشارة GPS', devSpeed: 'السرعة', devLast: 'آخر تحديث', devCoords: 'الموقع الحالي', devNoData: 'لم يتصل الجهاز بعد',
     gpsGood: 'ممتازة', gpsOk: 'جيدة', gpsWeak: 'ضعيفة', partsTitle: 'مكونات الجهاز', logTitle: 'سجل نشاط الجهاز', logSub: 'كل رصد خام يصل من الأجهزة ونتيجة فحصه في الباك إند',
     logTime: 'الوقت', logSrc: 'المصدر', logWhat: 'الرصد', logResult: 'النتيجة', logEmpty: 'لا يوجد نشاط بعد',
@@ -52,7 +71,7 @@ window.PAGES_I18N = {
     srcCitizen: 'مواطن', camTitle: 'ما تراه الكاميرا الآن', camLive: 'الكاميرا شغالة', camOld: 'آخر صورة قديمة — الكاميرا طافية؟', camSeen: 'ما رصده الموديل', camNothing: 'لا شيء — الطريق سليم', camNone: 'لم تصل صورة من الكاميرا بعد', camHint: 'تتحدث كل بضع ثوانٍ. استخدمها لضبط زاوية الكاميرا والإضاءة.', replayAlert: 'عرض تنبيه هذا البلاغ', reDetected: 'رُصد نفس العيب مرة ثانية:', citizenOnly: 'بلاغ مواطن — بانتظار التحقق', alertCitizen: 'بلاغ مواطن جديد', alertCitizenSub: 'وصل بلاغ من مواطن — بانتظار تحقق جهاز نبراس',
     parts: [
       ['cpu', 'ESP32', 'المعالج الرئيسي: يقرأ الحساسات ويتصل بالإنترنت عبر Wi-Fi ويرسل الرصد.'],
-      ['vibrate', 'MPU6050', 'حساس الاهتزاز: يقيس قوة الصدمة (g) عند مرور العجلة فوق حفرة.'],
+      ['vibrate', 'MPU6050', 'حساس الاهتزاز والميلان: يقيس قوة الصدمة (g) عند مرور العجلة فوق حفرة، ويقيس ميلان الشارع العرضي والطولي (%) لكشف ضعف تصريف المياه.'],
       ['radio', 'GPS NEO-6M', 'يحدد الموقع بدقة عدة أمتار، ويُرفض أي رصد إشارته ضعيفة.'],
       ['camera', 'ESP32-CAM + YOLO', 'تصوّر الطريق، ونموذج ذكاء اصطناعي (Roboflow) يتعرف على الحفر والتشققات والخطوط الباهتة، ويقدّر طول التشقق وطول الجزء الباهت وقطر الحفرة بالسنتيمتر.'],
       ['ruler', 'VL53L0X — حساس العمق', 'حساس ليزر موجّه للأرض يقيس عمق الحفرة بالسنتيمتر (الفرق بين المسافة الطبيعية للأرض والمسافة فوق الحفرة).'],
@@ -103,6 +122,25 @@ window.PAGES_I18N = {
     byType: 'By defect type', byStatus: 'By status', bySeverity: 'By severity', byCity: 'By city', last14: 'Detections in the last 14 days', recent: 'Latest reports',
     noDataYet: 'No data yet — waiting for the first detection from the Nibras device', viewAll: 'Open list',
     devTitle: 'Nibras Device', devSub: 'Live device status, components and activity log',
+    slopeTitle: 'Road slope — live', slopeSub: 'Measured by the MPU-6050 from the direction of gravity: the car tilts with the road, so the device tilt = the road slope',
+    slopeCross: 'Cross slope', slopeCrossHint: 'Left / right — drains rainwater', slopeGrade: 'Longitudinal grade', slopeGradeHint: 'Uphill / downhill',
+    slopeOk: 'Adequate — water drains', slopePoor: 'Below minimum — water may pool', slopeNone: 'Waiting for a slope reading from the device (update the main device code)',
+    slopeRef: 'Reference: typical cross slope for asphalt roads is 1.5% – 2%. Below {min}% is treated as poor drainage.', slopeLeft: 'Tilted left', slopeRight: 'Tilted right', slopeFlat: 'Level',
+    navCode: 'Road Code Standard',
+    cdTitle: 'Comparison with the Saudi Highway Code', cdSub: 'Nibras compares every detected defect with the Saudi Highway Code SHC 501 tables (Appendix A — flexible pavement distresses) and sets its severity automatically from real measurements',
+    cdMeasured: 'Rated by code tables', cdMeasuredSub: 'from measured depth and diameter', cdCamera: 'Rated by camera', cdCameraSub: 'code rates them by width or visually', cdHigh: 'High severity per code', cdHighSub: 'maintenance priority', cdDrain: 'Ponding risk', cdDrainSub: 'cross slope below 1.5%',
+    cdTable: 'Each defect vs. the standard', cdId: 'Report', cdType: 'Defect', cdMeasure: 'Measurement', cdRule: 'Code clause and result', cdResult: 'Severity', cdAction: 'Suggested treatment', cdNone: 'No defects detected yet',
+    cdDepth: 'depth', cdDia: 'diameter', cdLen: 'length', cdMm: 'mm', cdByCode: 'by code', cdByCam: 'by camera',
+    cdStd: 'The standard — Saudi Highway Code SHC 501', cdPotT: 'Potholes — Table A-1 (p. 131)', cdPotDepth: 'Maximum pothole depth', cdPotDia: 'Average diameter',
+    cdPotBig: 'If the diameter exceeds 750 mm: depth ≤ 25 mm → medium, more than 25 mm → high.',
+    cdDepT: 'Depression — A.1.6 (p. 124)', cdRutT: 'Rutting — A.1.15 (p. 132)', cdCrT: 'Longitudinal & transverse cracking — A.1.10 (p. 127)',
+    cdDepRows: [['13 – 25 mm', 'low'], ['25 – 50 mm', 'medium'], ['> 50 mm', 'high']],
+    cdRutRows: [['6 – 13 mm', 'low'], ['13 – 25 mm', 'medium'], ['> 25 mm', 'high']],
+    cdCrRows: [['width < 10 mm', 'low'], ['width 10 – 75 mm', 'medium'], ['width > 75 mm', 'high']],
+    cdCrNote: 'The device measures crack length, not width, so crack severity comes from the camera.',
+    cdOut: 'Outside SHC 501', cdOutBody: 'Faded markings are not a pavement distress in SHC 501. The 1.5% cross-slope limit comes from road design practice (typical 1.5% – 2%), since SHC 501 covers cross section only for unpaved roads (C.1.1). Suggested treatments follow the SHC 501 maintenance categories (routine, periodic, resurfacing — sections 5.7.2 to 5.7.4).',
+    slopeAt: 'Road slope at defect', slopeDrain: 'Drainage',
+    codeRule: 'Code assessment', codeAction: 'Suggested treatment', codeRef: 'Reference',
     devConn: 'Connection', devGps: 'GPS signal', devSpeed: 'Speed', devLast: 'Last update', devCoords: 'Current position', devNoData: 'The device has not connected yet',
     gpsGood: 'Excellent', gpsOk: 'Good', gpsWeak: 'Weak', partsTitle: 'Device components', logTitle: 'Device activity log', logSub: 'Every raw detection received from the devices and how the backend handled it',
     logTime: 'Time', logSrc: 'Source', logWhat: 'Detection', logResult: 'Result', logEmpty: 'No activity yet',
@@ -111,7 +149,7 @@ window.PAGES_I18N = {
     srcCitizen: 'Citizen', camTitle: 'What the camera sees now', camLive: 'Camera is live', camOld: 'Last frame is old — is the camera off?', camSeen: 'Model detections', camNothing: 'Nothing — road looks fine', camNone: 'No frame received from the camera yet', camHint: 'Refreshes every few seconds. Use it to adjust the camera angle and lighting.', replayAlert: 'Show this alert again', reDetected: 'Same defect detected again:', citizenOnly: 'Citizen report — awaiting verification', alertCitizen: 'New citizen report', alertCitizenSub: 'A citizen reported a defect — awaiting verification by the Nibras device',
     parts: [
       ['cpu', 'ESP32', 'Main controller: reads the sensors, connects over Wi-Fi and sends detections.'],
-      ['vibrate', 'MPU6050', 'Shock sensor: measures the impact (g) when a wheel hits a pothole.'],
+      ['vibrate', 'MPU6050', 'Shock & tilt sensor: measures the impact (g) when a wheel hits a pothole, and the road cross slope and grade (%) to spot poor drainage.'],
       ['radio', 'GPS NEO-6M', 'Locates the defect within a few meters; weak-signal detections are rejected.'],
       ['ruler', 'VL53L0X — depth sensor', 'A downward laser sensor that measures pothole depth in cm (normal distance to the road vs. distance over the pothole).'],
       ['camera', 'ESP32-CAM + YOLO', 'Films the road; an AI model (Roboflow) recognises potholes, cracks and faded markings.'],
@@ -255,6 +293,7 @@ function renderDevicePage() {
   if (!$('#devStats')) {
     el.innerHTML = `${pageHead(t.devTitle, t.devSub)}
       <div id="devStats" class="grid grid-cols-2 gap-3 lg:grid-cols-5"></div>
+      <div id="devSlope"></div>
       <div class="grid gap-4 lg:grid-cols-5">
         <div class="relative z-0 h-80 overflow-hidden rounded-xl border border-slate-200 shadow-sm lg:col-span-3" dir="ltr"><div id="devMap" class="h-full w-full"></div><div id="devMapEmpty" class="absolute inset-0 z-[500] grid place-items-center bg-white/80 text-sm text-slate-500"></div></div>
         <div id="devParts" class="lg:col-span-2"></div>
@@ -269,6 +308,7 @@ function renderDevicePage() {
     stat('gauge', t.devSpeed, d && d.speed != null ? `${(+d.speed).toFixed(0)} ${esc(t.kmh)}` : '—') +
     stat('activity', t.devLast, d && d.ts ? `<span class="text-base">${esc(tfmt(d.ts))}</span>` : '—') +
     stat('map', t.devCoords, d && d.lat ? `<bdo dir="ltr" class="font-mono text-sm">${(+d.lat).toFixed(6)}, ${(+d.lng).toFixed(6)}</bdo>` : '—');
+  renderSlope();
   $('#devParts').innerHTML = card(t.partsTitle, `<ul class="space-y-3">${t.parts.map(([icn, n, b]) => `<li class="flex gap-3"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">${ic(icn, 'size-5')}</span><span><span class="block text-sm font-semibold text-slate-900">${esc(n)}</span><span class="block text-xs leading-relaxed text-slate-500">${esc(b)}</span></span></li>`).join('')}</ul>`, 'h-full');
   renderDevLog();
   // mini map
@@ -288,6 +328,33 @@ function renderDevicePage() {
     } else { empty.hidden = false; empty.textContent = t.devNoData; }
     setTimeout(() => devMap.invalidateSize(), 50);
   }
+}
+/* ---------- ميلان الشارع (مباشر من الجهاز) ---------- */
+const SLOPE_MIN = 1.5;   // نفس CROSS_MIN_PCT في الباك إند
+function renderSlope() {
+  const el = $('#devSlope'); if (!el) return;
+  const t = T(), d = device;
+  const c = d && d.cross_pct != null && isFinite(+d.cross_pct) ? +d.cross_pct : null;
+  const g = d && d.grade_pct != null && isFinite(+d.grade_pct) ? +d.grade_pct : null;
+  if (c == null) { el.innerHTML = card(t.slopeTitle, `<p class="py-4 text-center text-sm text-slate-500">${esc(t.slopeNone)}</p>`); return; }
+  const poor = Math.abs(c) < SLOPE_MIN, col = poor ? '#E11D48' : '#059669';
+  const deg = Math.atan(c / 100) * 180 / Math.PI;
+  const big = (k, hint, v, extra = '') => `<div class="rounded-xl border border-slate-200 p-4"><div class="text-xs font-medium text-slate-500">${esc(k)}</div><div class="mt-1 text-3xl font-bold tabular-nums text-slate-900"><bdo dir="ltr">${v == null ? '—' : v.toFixed(1) + '%'}</bdo></div><div class="mt-1 text-xs text-slate-500">${esc(hint)}${extra}</div></div>`;
+  // رسم مقطع الشارع: نكبّر الزاوية ×8 عشان الميلان الصغير يبان بالعين
+  const vis = Math.max(-25, Math.min(25, deg * 8));
+  el.innerHTML = card(t.slopeTitle, `<p class="-mt-2 mb-4 text-sm text-slate-500">${esc(t.slopeSub)}</p>
+    <div class="grid gap-4 lg:grid-cols-3">
+      ${big(t.slopeCross, t.slopeCrossHint, c)}
+      ${big(t.slopeGrade, t.slopeGradeHint, g)}
+      <div class="flex flex-col items-center justify-center gap-3 rounded-xl border border-slate-200 p-4">
+        <div class="relative h-16 w-full max-w-56" dir="ltr">
+          <div class="absolute inset-x-0 top-1/2 border-t border-dashed border-slate-300"></div>
+          <div class="absolute inset-x-2 top-1/2 h-3 rounded-sm bg-slate-700 transition-transform duration-500" style="transform:translateY(-50%) rotate(${(-vis).toFixed(1)}deg)"><div class="mx-auto mt-[5px] h-0.5 w-3/4 border-t-2 border-dashed border-white/80"></div></div>
+        </div>
+        <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold" style="background:${col}1A;color:${col}"><span class="size-2 rounded-full" style="background:${col}"></span>${esc(poor ? t.slopePoor : t.slopeOk)}</span>
+      </div>
+    </div>
+    <p class="mt-3 text-xs text-slate-500">${esc(t.slopeRef.replace('{min}', SLOPE_MIN))}</p>`);
 }
 function renderDevLog() {
   const el = $('#devLog'); if (!el) return;
@@ -447,7 +514,52 @@ function renderAbout() {
 }
 
 /* ------------------------------ entry points (called from app.js) ------------------------------ */
-function renderPages() { renderDashboard(); renderDevicePage(); renderCitizen(); renderQuality(); renderReports(); renderAbout(); }
+/* ------------------------------ معيار كود الطرق السعودي ------------------------------ */
+function renderCodePage() {
+  const el = $('#codeBody'); if (!el) return;
+  const t = T(), L = o => o ? (S.lang === 'ar' ? o.ar : o.en) || '' : '';
+  const open = DEFECTS.filter(d => d.status !== 'fixed' && d.status !== 'dismissed');
+  const byCode = open.filter(d => d.code && d.code.measured), byCam = open.filter(d => !(d.code && d.code.measured));
+  const stat = (icn, k, v, sub, col = 'text-slate-900') => `<div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><div class="flex items-center gap-2 text-xs font-medium text-slate-500">${ic(icn, 'size-4')}${esc(k)}</div><div class="mt-2 text-2xl font-bold tabular-nums ${col}">${v}</div><div class="mt-1 text-xs text-slate-500">${esc(sub)}</div></div>`;
+  const sevCell = s => `<span class="inline-flex rounded-md px-2 py-1 text-xs font-semibold" style="background:${SEV_COLOR[s]}1A;color:${SEV_COLOR[s]}">${esc(t.severities[s])}</span>`;
+  const meas = d => { const p = [];
+    if (d.depthCm != null) p.push(`${esc(t.cdDepth)} <bdo dir="ltr">${Math.round(d.depthCm * 10)} ${esc(t.cdMm)}</bdo>`);
+    if (d.sizeCm != null) p.push(`${esc(d.type === 'pothole' ? t.cdDia : t.cdLen)} <bdo dir="ltr">${Math.round(d.sizeCm * 10)} ${esc(t.cdMm)}</bdo>`);
+    if (d.crossPct != null) p.push(`${esc(t.slopeCross)} <bdo dir="ltr">${d.crossPct.toFixed(1)}%</bdo>`);
+    return p.join('<br>') || '—'; };
+  const rows = open.slice().sort((a, b) => (SEV_RANK_P[b.severity] || 0) - (SEV_RANK_P[a.severity] || 0) || (b.lastSeen || 0) - (a.lastSeen || 0));
+  const list = (title, items) => `<div class="rounded-xl border border-slate-200 p-4"><div class="mb-3 text-sm font-semibold text-slate-900">${esc(title)}</div><ul class="space-y-2">${items.map(([k, s]) => `<li class="flex items-center justify-between gap-3 text-sm"><span class="text-slate-700">${esc(k)}</span>${sevCell(s)}</li>`).join('')}</ul></div>`;
+  const POT = [['13 – 25', ['low', 'low', 'medium']], ['25 – 50', ['low', 'medium', 'high']], ['> 50', ['medium', 'medium', 'high']]];
+  const potTable = `<div class="overflow-x-auto"><table class="w-full text-center text-sm" dir="ltr"><thead><tr><th class="p-2 text-xs font-medium text-slate-500">${esc(t.cdPotDepth)} (${esc(t.cdMm)}) \\ ${esc(t.cdPotDia)}</th>${['100 – 200', '200 – 450', '450 – 750'].map(h => `<th class="p-2 text-xs font-semibold text-slate-700">${h} ${esc(t.cdMm)}</th>`).join('')}</tr></thead>
+    <tbody>${POT.map(([dp, cells]) => `<tr class="border-t border-slate-100"><th class="p-2 text-xs font-semibold text-slate-700">${dp} ${esc(t.cdMm)}</th>${cells.map(s => `<td class="p-2">${sevCell(s)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="mt-3 text-xs text-slate-500">${esc(t.cdPotBig)}</p>`;
+  el.innerHTML = `${pageHead(t.cdTitle, t.cdSub)}
+    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      ${stat('ruler', t.cdMeasured, fmtNum(byCode.length), t.cdMeasuredSub, 'text-emerald-700')}
+      ${stat('camera', t.cdCamera, fmtNum(byCam.length), t.cdCameraSub)}
+      ${stat('alert', t.cdHigh, fmtNum(byCode.filter(d => d.severity === 'high').length), t.cdHighSub, 'text-rose-700')}
+      ${stat('activity', t.cdDrain, fmtNum(open.filter(d => d.drainage === 'poor').length), t.cdDrainSub, 'text-sky-700')}
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm"><div class="border-b border-slate-100 p-4 font-semibold text-slate-900">${esc(t.cdTable)}</div><div class="overflow-x-auto"><table class="w-full text-sm">
+      <thead><tr class="border-b bg-slate-50/80"><th class="th">${esc(t.cdId)}</th><th class="th">${esc(t.cdType)}</th><th class="th">${esc(t.cdMeasure)}</th><th class="th">${esc(t.cdRule)}</th><th class="th">${esc(t.cdResult)}</th><th class="th">${esc(t.cdAction)}</th></tr></thead>
+      <tbody>${rows.map(d => { const m = d.code && d.code.measured; return `<tr class="border-b border-slate-100 align-top last:border-0">
+        <td class="td"><button type="button" data-open="${d.id}" class="font-mono text-xs font-medium text-emerald-700 hover:underline">${d.id}</button></td>
+        <td class="td font-medium text-slate-900">${esc(t.types[d.type])}</td>
+        <td class="td text-slate-600" style="min-width:7rem">${meas(d)}</td>
+        <td class="td text-slate-700" style="white-space:normal;min-width:16rem">${d.code && d.code.rule ? esc(L(d.code.rule)) : '—'}${d.code && d.code.drainage ? `<div class="mt-1 text-xs text-sky-700">${esc(L(d.code.drainage))}</div>` : ''}</td>
+        <td class="td">${sevCell(d.severity)}<div class="mt-1 text-[11px] text-slate-500">${esc(m ? t.cdByCode : t.cdByCam)}</div></td>
+        <td class="td font-medium text-slate-800" style="white-space:normal;min-width:9rem">${d.code && d.code.action ? esc(L(d.code.action)) : '—'}</td></tr>`; }).join('') || `<tr><td colspan="6" class="py-8 text-center text-slate-500">${esc(t.cdNone)}</td></tr>`}</tbody>
+    </table></div></div>
+    ${card(t.cdStd, `<div class="grid gap-4 lg:grid-cols-2">
+      <div class="rounded-xl border border-slate-200 p-4 lg:col-span-2"><div class="mb-3 text-sm font-semibold text-slate-900">${esc(t.cdPotT)}</div>${potTable}</div>
+      ${list(t.cdDepT, t.cdDepRows)}${list(t.cdRutT, t.cdRutRows)}
+      <div class="lg:col-span-2">${list(t.cdCrT, t.cdCrRows)}<p class="mt-2 text-xs text-slate-500">${esc(t.cdCrNote)}</p></div>
+    </div>`)}
+    ${card(t.cdOut, `<p class="text-sm leading-relaxed text-slate-600">${esc(t.cdOutBody)}</p>`)}`;
+}
+const SEV_RANK_P = { low: 1, medium: 2, high: 3 };
+
+function renderPages() { renderDashboard(); renderDevicePage(); renderCitizen(); renderQuality(); renderCodePage(); renderReports(); renderAbout(); }
 function renderStaticPages() {}
 function bindPages() {
   document.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) showDefect(b.dataset.open); });

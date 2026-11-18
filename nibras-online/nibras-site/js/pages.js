@@ -74,7 +74,7 @@ window.PAGES_I18N = {
       ['vibrate', 'MPU6050', 'حساس الاهتزاز والميلان: يقيس قوة الصدمة (g) عند مرور العجلة فوق حفرة، ويقيس ميلان الشارع العرضي والطولي (%) لكشف ضعف تصريف المياه.'],
       ['radio', 'GPS NEO-6M', 'يحدد الموقع بدقة عدة أمتار، ويُرفض أي رصد إشارته ضعيفة.'],
       ['camera', 'ESP32-CAM + YOLO', 'تصوّر الطريق، ونموذج ذكاء اصطناعي (Roboflow) يتعرف على الحفر والتشققات والخطوط الباهتة، ويقدّر طول التشقق وطول الجزء الباهت وقطر الحفرة بالسنتيمتر.'],
-      ['ruler', 'VL53L0X — حساس العمق', 'حساس ليزر موجّه للأرض يقيس عمق الحفرة بالسنتيمتر (الفرق بين المسافة الطبيعية للأرض والمسافة فوق الحفرة).'],
+      ['ruler', 'VL53L0X — حساس العمق', 'حساس ليزر موجّه للأرض يقيس عمق الحفرة بالمليمتر (الفرق بين المسافة الطبيعية للأرض والمسافة فوق الحفرة).'],
       ['server', 'الباك إند', 'يتحقق من الرصد، يدمج الحساس مع الكاميرا، يمنع التكرار، ويحدد اسم الشارع والحي.'],
     ],
     // Citizen
@@ -151,7 +151,7 @@ window.PAGES_I18N = {
       ['cpu', 'ESP32', 'Main controller: reads the sensors, connects over Wi-Fi and sends detections.'],
       ['vibrate', 'MPU6050', 'Shock & tilt sensor: measures the impact (g) when a wheel hits a pothole, and the road cross slope and grade (%) to spot poor drainage.'],
       ['radio', 'GPS NEO-6M', 'Locates the defect within a few meters; weak-signal detections are rejected.'],
-      ['ruler', 'VL53L0X — depth sensor', 'A downward laser sensor that measures pothole depth in cm (normal distance to the road vs. distance over the pothole).'],
+      ['ruler', 'VL53L0X — depth sensor', 'A downward laser sensor that measures pothole depth in mm (normal distance to the road vs. distance over the pothole).'],
       ['camera', 'ESP32-CAM + YOLO', 'Films the road; an AI model (Roboflow) recognises potholes, cracks and faded markings.'],
       ['server', 'Backend', 'Validates detections, fuses sensor and camera, removes duplicates and finds the street name.'],
     ],
@@ -225,8 +225,8 @@ function renderDashboard() {
   const mCards = [
     ['ruler', t.mCrack, cracks.length ? len(sum(cracks)) : '—', `${fmtNum(cracks.length)} ${t.mMeasured}`],
     ['ruler', t.mFaded, faded.length ? len(sum(faded)) : '—', `${fmtNum(faded.length)} ${t.mMeasured}`],
-    ['gauge', t.mDepthAvg, deep.length ? `${(deep.reduce((s, d) => s + d.depthCm, 0) / deep.length).toFixed(1)} ${t.mCm}` : '—', deep.length ? `${fmtNum(deep.length)} ${t.mMeasured}` : t.mWaitDepth],
-    ['alert', t.mDepthMax, deep.length ? `${Math.max(...deep.map(d => d.depthCm)).toFixed(1)} ${t.mCm}` : '—', deep.length ? '' : t.mWaitDepth],
+    ['gauge', t.mDepthAvg, deep.length ? `${Math.round(deep.reduce((s, d) => s + d.depthCm, 0) / deep.length * 10)} ${t.cdMm}` : '—', deep.length ? `${fmtNum(deep.length)} ${t.mMeasured}` : t.mWaitDepth],
+    ['alert', t.mDepthMax, deep.length ? `${Math.round(Math.max(...deep.map(d => d.depthCm)) * 10)} ${t.cdMm}` : '—', deep.length ? '' : t.mWaitDepth],
   ];
   // متابعة الإصلاح: المدة من أول رصد إلى إصلاحه، للإصلاحات اللي أكدها الجهاز
   const vf = D.filter(d => d.fixCheck === 'verified' && d.fixMs != null), fxMs = vf.map(d => d.fixMs);
@@ -360,7 +360,7 @@ function renderDevLog() {
   const el = $('#devLog'); if (!el) return;
   const t = T(), rows = RAWLOG.slice().reverse().slice(0, 25);
   const srcName = s => s === 'sensor' ? t.srcSensor : s === 'camera' ? t.srcCamera : s === 'citizen' ? t.srcCitizen : s;
-  const what = e => e.src === 'sensor' ? `${esc(t.shock)}: <bdo dir="ltr">${e.g != null ? (+e.g).toFixed(2) : '—'} g</bdo>${e.depthCm ? ` · ${esc(t.depthShort)} <bdo dir="ltr">${e.depthCm} ${esc(t.mCm)}</bdo>` : ''}` : `${esc(t.types[e.type] || e.type || '—')}${e.conf != null ? ` · <bdo dir="ltr">${Math.round(e.conf * 100)}%</bdo>` : ''}${e.sizeCm ? ` · ${esc(e.type === 'pothole' ? t.diaShort : t.lenShort)} <bdo dir="ltr">${e.sizeCm} ${esc(t.mCm)}</bdo>` : ''}${e.depthCm ? ` · ${esc(t.depthShort)} <bdo dir="ltr">${e.depthCm} ${esc(t.mCm)}</bdo>` : ''}`;
+  const what = e => e.src === 'sensor' ? `${esc(t.shock)}: <bdo dir="ltr">${e.g != null ? (+e.g).toFixed(2) : '—'} g</bdo>${e.depthCm ? ` · ${esc(t.depthShort)} <bdo dir="ltr">${Math.round(e.depthCm * 10)} ${esc(t.cdMm)}</bdo>` : ''}` : `${esc(t.types[e.type] || e.type || '—')}${e.conf != null ? ` · <bdo dir="ltr">${Math.round(e.conf * 100)}%</bdo>` : ''}${e.sizeCm ? ` · ${esc(e.type === 'pothole' ? t.diaShort : t.lenShort)} <bdo dir="ltr">${e.sizeCm} ${esc(t.mCm)}</bdo>` : ''}${e.depthCm ? ` · ${esc(t.depthShort)} <bdo dir="ltr">${Math.round(e.depthCm * 10)} ${esc(t.cdMm)}</bdo>` : ''}`;
   el.innerHTML = card(t.logTitle, `<p class="-mt-2 mb-3 text-sm text-slate-500">${esc(t.logSub)}</p><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b bg-slate-50/80"><th class="th">${esc(t.logTime)}</th><th class="th">${esc(t.logSrc)}</th><th class="th">${esc(t.logWhat)}</th><th class="th">${esc(t.coordinates)}</th><th class="th">${esc(t.logResult)}</th></tr></thead><tbody>${rows.map(e => `<tr class="border-b border-slate-100 last:border-0"><td class="td text-slate-600">${esc(tfmt(e.ts))}</td><td class="td">${esc(srcName(e.src))}</td><td class="td">${what(e)}</td><td class="td"><bdo dir="ltr" class="font-mono text-xs text-slate-500">${e.lat != null ? `${(+e.lat).toFixed(5)}, ${(+e.lng).toFixed(5)}` : '—'}</bdo></td><td class="td">${e.report ? `<button type="button" data-open="${e.report}" class="inline-flex items-center gap-1 font-medium text-emerald-700 hover:underline">${ic('circle-check', 'size-4')}${esc(t.accepted)} <span class="font-mono text-xs">${e.report}</span></button>` : `<span class="inline-flex items-center gap-1 text-rose-600">${ic('circle-alert', 'size-4')}${esc(t.rejected)}: ${esc(t.reasons[e.rejected] || e.rejected || '')}</span>`}</td></tr>`).join('') || `<tr><td colspan="5" class="py-8 text-center text-slate-500">${esc(t.logEmpty)}</td></tr>`}</tbody></table></div>`);
 }
 let camTs = 0;

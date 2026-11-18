@@ -132,7 +132,9 @@ function sizeLabel(d){const t=T();return d.type==='pothole'?t.sizePothole:d.type
 function slopeHtml(d){const t=T(),poor=d.drainage==='poor',c=poor?'text-rose-700':'text-emerald-700';
   return `<span><bdo dir="ltr">${d.crossPct.toFixed(1)}%</bdo>${d.gradePct!=null?` <span class="text-slate-500">· ${esc(t.slopeGrade)} <bdo dir="ltr">${d.gradePct.toFixed(1)}%</bdo></span>`:''}</span>`}
 function drainHtml(d){const t=T(),poor=d.drainage==='poor';return `<span class="inline-flex items-center gap-1 ${poor?'text-rose-700':'text-emerald-700'}">${ic(poor?'circle-alert':'circle-check','size-4')}${esc(poor?t.slopePoor:t.slopeOk)}</span>`}
-function depthHtml(d){const t=T();return d.depthCm!=null?`<span><bdo dir="ltr">${d.depthCm}</bdo> ${esc(t.cm)}</span>`:`<span class="text-slate-400">${esc(t.depthWaiting)}</span>`}
+// العمق يُعرض بالمليمتر: نفس وحدة حساس الليزر وجداول كود الطرق SHC 501
+const mmOf=cm=>Math.round(cm*10);
+function depthHtml(d){const t=T();return d.depthCm!=null?`<span><bdo dir="ltr">${mmOf(d.depthCm)}</bdo> ${esc(t.cdMm)}</span>`:`<span class="text-slate-400">${esc(t.depthWaiting)}</span>`}
 function details(d,compact){const t=T();const rows=[[t.type,esc(t.types[d.type])],[t.severity,badge(d.severity)]];
   if(d.live)rows.push([t.status,statusBadge(d.status)],[t.verify,verifyHtml(d)]);
   rows.push([t.location,esc(placeName(d))],[t.coordinates,`<bdo dir="ltr" class="font-mono text-xs">${d.lat}, ${d.lng}</bdo>`],[t.dateDetected,d.firstSeen?`<span>${esc(tfmt(d.firstSeen))}</span>`:`<bdo dir="ltr">${d.date}</bdo>`]);

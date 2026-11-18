@@ -84,7 +84,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 
 /* ---------- Static paint ---------- */
-const NAV=[['landing','house','navHome'],['dashboard','gauge','navDashboard'],['map','map','navMap'],['defects','table','navDefects'],['device','cpu','navDevice'],['citizen','megaphone','navCitizen'],['quality','activity','navQuality'],['reports','file-text','navReports'],['about','info','navAbout'],['entities','building','navEntities'],['settings','settings','navSettings']];
+const NAV=[['landing','house','navHome'],['dashboard','gauge','navDashboard'],['map','map','navMap'],['defects','table','navDefects'],['device','cpu','navDevice'],['citizen','megaphone','navCitizen'],['quality','activity','navQuality'],['code','ruler','navCode'],['reports','file-text','navReports'],['about','info','navAbout'],['entities','building','navEntities'],['settings','settings','navSettings']];
 if(VIEWER)NAV.splice(NAV.findIndex(n=>n[0]==='device'),1);
 function paintNav(){
   $$('[data-nav]').forEach(n=>{const top=n.dataset.nav==='top',items=top?NAV.slice(0,9):NAV;
@@ -128,6 +128,10 @@ function verifyHtml(d){const t=T();
   return `<span class="inline-flex items-center gap-1 text-amber-700">${ic('circle-alert','size-4')}${esc(t.sensorOnly)}</span>`}
 function sizeHtml(d){const t=T();return `<span>≈ <bdo dir="ltr">${d.sizeCm}</bdo> ${esc(t.cm)}</span>`}
 function sizeLabel(d){const t=T();return d.type==='pothole'?t.sizePothole:d.type==='faded_marking'?t.sizeFaded:d.type==='rutting'?t.sizeRut:t.sizeCrack}
+// ميلان الشارع عند العيب + حالة تصريف المياه
+function slopeHtml(d){const t=T(),poor=d.drainage==='poor',c=poor?'text-rose-700':'text-emerald-700';
+  return `<span><bdo dir="ltr">${d.crossPct.toFixed(1)}%</bdo>${d.gradePct!=null?` <span class="text-slate-500">· ${esc(t.slopeGrade)} <bdo dir="ltr">${d.gradePct.toFixed(1)}%</bdo></span>`:''}</span>`}
+function drainHtml(d){const t=T(),poor=d.drainage==='poor';return `<span class="inline-flex items-center gap-1 ${poor?'text-rose-700':'text-emerald-700'}">${ic(poor?'circle-alert':'circle-check','size-4')}${esc(poor?t.slopePoor:t.slopeOk)}</span>`}
 function depthHtml(d){const t=T();return d.depthCm!=null?`<span><bdo dir="ltr">${d.depthCm}</bdo> ${esc(t.cm)}</span>`:`<span class="text-slate-400">${esc(t.depthWaiting)}</span>`}
 function details(d,compact){const t=T();const rows=[[t.type,esc(t.types[d.type])],[t.severity,badge(d.severity)]];
   if(d.live)rows.push([t.status,statusBadge(d.status)],[t.verify,verifyHtml(d)]);
@@ -139,6 +143,12 @@ function details(d,compact){const t=T();const rows=[[t.type,esc(t.types[d.type])
   if(d.conf!=null)rows.push([t.confidence,`<bdo dir="ltr">${Math.round(d.conf*100)}%</bdo>`]);
   if(d.sizeCm!=null)rows.push([sizeLabel(d),sizeHtml(d)]);
   if(d.live&&d.type==='pothole')rows.push([t.depth,depthHtml(d)]);
+  if(d.crossPct!=null){rows.push([t.slopeAt,slopeHtml(d)]);if(d.drainage)rows.push([t.slopeDrain,drainHtml(d)])}
+  if(d.live&&d.code){const L=o=>o?(S.lang==='ar'?o.ar:o.en)||'':'',w='block max-w-xs whitespace-normal text-end';
+    if(d.code.rule)rows.push([t.codeRule,`<span class="${w}">${esc(L(d.code.rule))}</span>`]);
+    if(d.code.action)rows.push([t.codeAction,`<span class="${w} font-semibold">${esc(L(d.code.action))}</span>`]);
+    if(d.code.drainage)rows.push(['',`<span class="${w} text-rose-700">${esc(L(d.code.drainage))}</span>`]);
+    if(!compact&&d.code.ref)rows.push([t.codeRef,`<span class="${w} text-xs font-normal text-slate-500">${esc(L(d.code.ref))}</span>`])}
   if(d.citizen){rows.push([t.navCitizen,`${d.citizen.count||1}`]);if(!compact)(d.citizen.notes||[]).forEach(n=>rows.push(['',`<span class="block max-w-xs whitespace-normal text-start text-sm font-normal text-slate-600">“${esc(n.desc)}”${n.name?` — ${esc(n.name)}`:''}</span>`]))}
   if(!compact&&d.areaM2!=null)rows.push([t.area,`${d.areaM2} ${t.m2}`]);
   return `<dl class="divide-y divide-slate-100 text-sm">${rows.map(([k,v])=>`<div class="flex items-center justify-between gap-4 py-2"><dt class="shrink-0 text-slate-500">${esc(k)}</dt><dd class="text-end font-medium text-slate-900">${v}</dd></div>`).join('')}</dl>`}
@@ -240,6 +250,7 @@ function showBigAlert(d,extra){
         ${d.conf!=null?cell(t.confidence,`<bdo dir="ltr">${Math.round(d.conf*100)}%</bdo>`):''}
         ${d.sizeCm!=null?cell(sizeLabel(d),sizeHtml(d)):''}
         ${d.type==='pothole'?cell(t.depth,depthHtml(d)):''}
+        ${d.crossPct!=null?cell(t.slopeAt,slopeHtml(d)):''}
         ${cell(t.colId,`<span class="font-mono text-base">${d.id}</span>`)}
       </div>
       <div class="flex flex-wrap gap-3 px-5 pb-5">
@@ -264,7 +275,7 @@ function fromReport(r){return{id:r.id,key:r.id,live:true,
   road:r.road&&r.road.ar?r.road:null,district:r.district&&r.district.ar?r.district:null,
   lat:+(+r.lat).toFixed(6),lng:+(+r.lng).toFixed(6),date:fmt(new Date(r.firstSeen||Date.now())),
   firstSeen:r.firstSeen||null,lastSeen:r.lastSeen||r.firstSeen||null,
-  shock:r.sensor&&r.sensor.g!=null?+r.sensor.g:null,conf:r.camera&&r.camera.conf!=null?+r.camera.conf:null,sizeCm:r.camera&&r.camera.sizeCm?+r.camera.sizeCm:null,depthCm:r.depthCm?+r.depthCm:null,
+  shock:r.sensor&&r.sensor.g!=null?+r.sensor.g:null,conf:r.camera&&r.camera.conf!=null?+r.camera.conf:null,sizeCm:r.camera&&r.camera.sizeCm?+r.camera.sizeCm:null,depthCm:r.depthCm?+r.depthCm:null,crossPct:r.crossPct!=null&&isFinite(+r.crossPct)?+r.crossPct:null,gradePct:r.gradePct!=null&&isFinite(+r.gradePct)?+r.gradePct:null,drainage:r.drainage==='poor'||r.drainage==='ok'?r.drainage:null,code:r.code&&typeof r.code==='object'?r.code:null,
   photo:typeof r.photo==='string'&&r.photo?r.photo:null,source:['both','camera','sensor','citizen'].includes(r.source)?r.source:'sensor',citizen:r.citizen||null,
   confirmed:!!r.confirmed,status:STATUS_KEYS.includes(r.status)?r.status:'new',hits:r.hits||1,areaM2:null,
   fixCheck:['pending','verified','failed'].includes(r.fixCheck)?r.fixCheck:null,fixedAt:r.fixedAt||null,verifiedAt:r.verifiedAt||null,
